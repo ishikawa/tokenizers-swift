@@ -7,10 +7,6 @@ uniffi_macros::include_scaffolding!("lib");
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn add(a: u32, b: u32) -> u32 {
-    a + b
-}
-
 pub struct Tokenizer {
     tokenizer: Arc<tk::tokenizer::Tokenizer>,
 }
