@@ -10,11 +10,11 @@ interface Tokenizer {
   [Name=from_pretrained, Throws=TokenizersError]
   constructor(
     [ByRef] string identifier,
-    optional string revision = "main",
-    optional string? auth_token = null);
+    string revision,
+    string? auth_token);
 
   [Throws=TokenizersError]
-  Encoding encode([ByRef] string input, optional boolean add_special_tokens = true);
+  Encoding encode([ByRef] string input, boolean add_special_tokens);
 };
 
 interface Encoding {

@@ -16,7 +16,7 @@ rustlib: Cargo.toml ${SRC}
 	cargo build --message-format json | \
 	jq -r "if .reason == \"build-script-executed\" and \
 		(.package_id | contains(\"$${pkg}\")) then .out_dir else empty end" > ${BUILD_DIR}/out_dir.txt
-	cp -r $$(cat ${BUILD_DIR}/out_dir.txt)/*.{h,swift,modulemap} ${BUILD_DIR}/
+	cp $$(cat ${BUILD_DIR}/out_dir.txt)/*.{h,swift,modulemap} ${SRC_DIR}/
 
 swiftmodule:
 	pkg=$$(cargo metadata --no-deps --format-version 1 | jq -r ".packages[0].name"); \
@@ -25,8 +25,8 @@ swiftmodule:
 		-emit-library -o ${BUILD_DIR}/lib${LIB_NAME}.dylib \
 		-L ./target/debug -l$${pkg//-/_} \
   		-I ${BUILD_DIR} \
-		-Xcc -fmodule-map-file=${BUILD_DIR}/${LIB_NAME}FFI.modulemap \
-		${BUILD_DIR}/${LIB_NAME}.swift
+		-Xcc -fmodule-map-file=${SRC_DIR}/${LIB_NAME}FFI.modulemap \
+		${SRC_DIR}/*.swift
 
 build: rustlib swiftmodule
 
