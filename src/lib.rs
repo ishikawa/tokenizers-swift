@@ -32,4 +32,23 @@ impl Tokenizer {
             tokenizer: Arc::new(tokenizer),
         }
     }
+
+    pub fn encode(&self, input: &str, add_special_tokens: bool) -> Arc<Encoding> {
+        let encoding = self
+            .tokenizer
+            .encode_char_offsets(input, add_special_tokens)
+            .unwrap();
+
+        Arc::new(Encoding::new(Arc::new(encoding)))
+    }
+}
+
+pub struct Encoding {
+    encoding: Arc<tk::tokenizer::Encoding>,
+}
+
+impl Encoding {
+    pub fn new(encoding: Arc<tk::tokenizer::Encoding>) -> Self {
+        Self { encoding }
+    }
 }

@@ -8,4 +8,10 @@ interface Tokenizer {
     [ByRef] string identifier,
     optional string revision = "main",
     optional string? auth_token = null);
+
+  Encoding encode([ByRef] string input, optional boolean add_special_tokens = true);
+};
+
+interface Encoding {
+
 };
