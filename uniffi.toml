@@ -1,0 +1,3 @@
+[bindings.swift]
+generate_module_map = true
+omit_argument_labels = false
