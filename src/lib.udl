@@ -13,5 +13,5 @@ interface Tokenizer {
 };
 
 interface Encoding {
-
+  sequence<string> get_tokens();
 };

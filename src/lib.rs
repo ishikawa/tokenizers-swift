@@ -51,4 +51,8 @@ impl Encoding {
     pub fn new(encoding: Arc<tk::tokenizer::Encoding>) -> Self {
         Self { encoding }
     }
+
+    pub fn get_tokens(&self) -> Vec<String> {
+        self.encoding.get_tokens().to_vec()
+    }
 }
