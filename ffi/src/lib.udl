@@ -1,3 +1,11 @@
-namespace math {
+namespace tokenizers {
   u32 add(u32 a, u32 b);
+};
+
+interface Tokenizer {
+  [Name=from_pretrained]
+  constructor(
+    [ByRef] string identifier,
+    optional string revision = "main",
+    optional string? auth_token = null);
 };

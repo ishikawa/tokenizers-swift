@@ -6,7 +6,7 @@ SRC = ${SRC_DIR}/lib.rs ${SRC_DIR}/lib.udl
 
 BUILD_DIR = .build
 
-LIB_NAME = math
+LIB_NAME = tokenizers
 
 all: build
 
