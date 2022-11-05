@@ -8,6 +8,7 @@ authors = ["Takanori Ishikawa <takanori.ishikawa@gmail.com>"]
 tokenizers = "^0.13"
 uniffi = "0.21.0"
 uniffi_macros = "0.21.0"
+thiserror = "^1.0"
 
 [build-dependencies]
 uniffi_build = {version = "0.21.0", features = [ "builtin-bindgen" ]}

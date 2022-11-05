@@ -1,4 +1,4 @@
-.PHONY: all clean build
+.PHONY: all clean build rustlib swiftmodule
 
 SRC_DIR = src
 
@@ -10,15 +10,12 @@ LIB_NAME = tokenizers
 
 all: build
 
-${BUILD_DIR}/out_dir.txt: Cargo.toml
+rustlib: Cargo.toml ${SRC}
 	mkdir -p ${BUILD_DIR}
 	pkg=$$(cargo metadata --no-deps --format-version 1 | jq -r ".packages[0].name"); \
-	cargo check --message-format json | \
+	cargo build --message-format json | \
 	jq -r "if .reason == \"build-script-executed\" and \
-		(.package_id | contains(\"$${pkg}\")) then .out_dir else empty end" > $@
-
-rustlib: ${BUILD_DIR}/out_dir.txt ${SRC}
-	cargo build
+		(.package_id | contains(\"$${pkg}\")) then .out_dir else empty end" > ${BUILD_DIR}/out_dir.txt
 	cp -r $$(cat ${BUILD_DIR}/out_dir.txt)/*.{h,swift,modulemap} ${BUILD_DIR}/
 
 swiftmodule:

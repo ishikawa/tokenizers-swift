@@ -1,13 +1,19 @@
 namespace tokenizers {
 };
 
+[Error]
+enum TokenizersError {
+  "Tokenizer",
+};
+
 interface Tokenizer {
-  [Name=from_pretrained]
+  [Name=from_pretrained, Throws=TokenizersError]
   constructor(
     [ByRef] string identifier,
     optional string revision = "main",
     optional string? auth_token = null);
 
+  [Throws=TokenizersError]
   Encoding encode([ByRef] string input, optional boolean add_special_tokens = true);
 };
 

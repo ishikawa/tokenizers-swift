@@ -1,5 +1,5 @@
 use std::sync::Arc;
-
+use thiserror::Error;
 use tokenizers as tk;
 use uniffi_macros;
 
@@ -7,12 +7,27 @@ uniffi_macros::include_scaffolding!("lib");
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+#[derive(Error, Debug)]
+pub enum TokenizersError {
+    #[error("Tokenizer error: {source}")]
+    Tokenizer {
+        #[from]
+        source: tk::tokenizer::Error,
+    },
+}
+
+pub type Result<T> = std::result::Result<T, TokenizersError>;
+
 pub struct Tokenizer {
     tokenizer: Arc<tk::tokenizer::Tokenizer>,
 }
 
 impl Tokenizer {
-    pub fn from_pretrained(identifier: &str, revision: String, auth_token: Option<String>) -> Self {
+    pub fn from_pretrained(
+        identifier: &str,
+        revision: String,
+        auth_token: Option<String>,
+    ) -> Result<Self> {
         let params = tk::FromPretrainedParameters {
             revision,
             auth_token,
@@ -21,21 +36,19 @@ impl Tokenizer {
                 .map(|(k, v)| (k.to_string(), v.to_string()))
                 .collect(),
         };
-        let tokenizer =
-            tk::tokenizer::Tokenizer::from_pretrained(identifier, Some(params)).unwrap();
+        let tokenizer = tk::tokenizer::Tokenizer::from_pretrained(identifier, Some(params))?;
 
-        Self {
+        Ok(Self {
             tokenizer: Arc::new(tokenizer),
-        }
+        })
     }
 
-    pub fn encode(&self, input: &str, add_special_tokens: bool) -> Arc<Encoding> {
+    pub fn encode(&self, input: &str, add_special_tokens: bool) -> Result<Arc<Encoding>> {
         let encoding = self
             .tokenizer
-            .encode_char_offsets(input, add_special_tokens)
-            .unwrap();
+            .encode_char_offsets(input, add_special_tokens)?;
 
-        Arc::new(Encoding::new(Arc::new(encoding)))
+        Ok(Arc::new(Encoding::new(Arc::new(encoding))))
     }
 }
 
