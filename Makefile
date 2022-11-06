@@ -2,9 +2,8 @@
 
 BUILD_DIR = .build
 
-LIB_NAME = Tokenizers
-
-GENERATED_SRC = Sources/Tokenizers/${LIB_NAME}.swift Sources/TokenizersFFI/include/${LIB_NAME}FFI.h
+GENERATED_SRC = Sources/Tokenizers/RustTokenizers.swift \
+								Sources/RustTokenizersFFI/include/RustTokenizersFFI.h
 
 all: build
 
@@ -19,8 +18,8 @@ outdir:
 build: outdir
 	cargo build
 	cp $$(cat ${BUILD_DIR}/out_dir.txt)/*.{h,swift} ${BUILD_DIR}/
-	cp ${BUILD_DIR}/${LIB_NAME}.swift Sources/Tokenizers/
-	cp ${BUILD_DIR}/${LIB_NAME}FFI.h Sources/TokenizersFFI/include/
+	cp ${BUILD_DIR}/RustTokenizers.swift Sources/Tokenizers/
+	cp ${BUILD_DIR}/RustTokenizersFFI.h Sources/RustTokenizersFFI/include/
 
 clean:
 	cargo clean

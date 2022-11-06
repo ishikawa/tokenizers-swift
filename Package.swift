@@ -14,12 +14,12 @@ let package = Package(
     targets: [
         .target(
             name: "Tokenizers",
-            dependencies: ["TokenizersFFI"],
+            dependencies: ["RustTokenizersFFI"],
             linkerSettings: [
                 .linkedLibrary("tokenizers")
             ]),
         .target(
-            name: "TokenizersFFI",
+            name: "RustTokenizersFFI",
             dependencies: []),
         .testTarget(
             name: "TokenizersTests",

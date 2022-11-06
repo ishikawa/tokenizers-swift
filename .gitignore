@@ -32,8 +32,5 @@ Footer
 .build.abi.json
 .build.swiftdoc
 .build.swiftsourceinfo
-src/Tokenizers.swift
-src/TokenizersFFI.h
-src/TokenizersFFI.modulemap
-Sources/Tokenizers/Tokenizers.swift
-Sources/TokenizersFFI/include/TokenizersFFI.h
+Sources/Tokenizers/RustTokenizers.swift
+Sources/RustTokenizersFFI/include/RustTokenizersFFI.h
