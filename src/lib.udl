@@ -6,7 +6,7 @@ enum TokenizersError {
   "Tokenizer",
 };
 
-interface Tokenizer {
+interface RustTokenizer {
   [Name=from_pretrained, Throws=TokenizersError]
   constructor(
     [ByRef] string identifier,
@@ -14,9 +14,9 @@ interface Tokenizer {
     string? auth_token);
 
   [Throws=TokenizersError]
-  Encoding encode([ByRef] string input, boolean add_special_tokens);
+  RustEncoding encode([ByRef] string input, boolean add_special_tokens);
 };
 
-interface Encoding {
+interface RustEncoding {
   sequence<string> get_tokens();
 };

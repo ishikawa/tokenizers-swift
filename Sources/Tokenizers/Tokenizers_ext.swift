@@ -1,12 +1,28 @@
-extension Tokenizer {
-    public static func fromPretrained(
-        _ identifier: String, revision: String = "main", authToken: String? = nil
-    ) throws -> Tokenizer {
-        return try Tokenizer.fromPretrained(
+public class Tokenizer {
+    let tokenizer: RustTokenizer
+
+    public init(pretrained identifier: String, revision: String = "main", authToken: String? = nil)
+        throws
+    {
+        self.tokenizer = try RustTokenizer.fromPretrained(
             identifier: identifier, revision: revision, authToken: authToken)
     }
 
     public func encode(_ input: String, addSpecialTokens: Bool = true) throws -> Encoding {
-        return try self.encode(input: input, addSpecialTokens: addSpecialTokens)
+        let encoding = try self.tokenizer.encode(input: input, addSpecialTokens: addSpecialTokens)
+        return Encoding(encoding)
+    }
+
+}
+
+public struct Encoding {
+    let encoding: RustEncoding
+
+    init(_ encoding: RustEncoding) {
+        self.encoding = encoding
+    }
+
+    public var tokens: [String] {
+        self.encoding.getTokens()
     }
 }

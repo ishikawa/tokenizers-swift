@@ -18,11 +18,11 @@ pub enum TokenizersError {
 
 pub type Result<T> = std::result::Result<T, TokenizersError>;
 
-pub struct Tokenizer {
+pub struct RustTokenizer {
     tokenizer: Arc<tk::tokenizer::Tokenizer>,
 }
 
-impl Tokenizer {
+impl RustTokenizer {
     pub fn from_pretrained(
         identifier: &str,
         revision: String,
@@ -43,20 +43,20 @@ impl Tokenizer {
         })
     }
 
-    pub fn encode(&self, input: &str, add_special_tokens: bool) -> Result<Arc<Encoding>> {
+    pub fn encode(&self, input: &str, add_special_tokens: bool) -> Result<Arc<RustEncoding>> {
         let encoding = self
             .tokenizer
             .encode_char_offsets(input, add_special_tokens)?;
 
-        Ok(Arc::new(Encoding::new(Arc::new(encoding))))
+        Ok(Arc::new(RustEncoding::new(Arc::new(encoding))))
     }
 }
 
-pub struct Encoding {
+pub struct RustEncoding {
     encoding: Arc<tk::tokenizer::Encoding>,
 }
 
-impl Encoding {
+impl RustEncoding {
     pub fn new(encoding: Arc<tk::tokenizer::Encoding>) -> Self {
         Self { encoding }
     }
