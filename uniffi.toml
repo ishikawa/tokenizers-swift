@@ -1,5 +1,5 @@
 [bindings.swift]
 module_name = "Tokenizers"
 ffi_module_filename = "TokenizersFFI"
-generate_module_map = true
+generate_module_map = false
 omit_argument_labels = false
