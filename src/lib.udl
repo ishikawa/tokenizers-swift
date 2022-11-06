@@ -4,6 +4,7 @@ namespace tokenizers {
 [Error]
 enum TokenizersError {
   "Tokenizer",
+  "ValueError",
 };
 
 interface RustTokenizer {
