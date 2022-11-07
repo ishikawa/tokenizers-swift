@@ -5,6 +5,7 @@ namespace tokenizers {
 enum TokenizersError {
   "Tokenizer",
   "ValueError",
+  "Exception",
 };
 
 interface RustTokenizer {
@@ -20,4 +21,23 @@ interface RustTokenizer {
 
 interface RustEncoding {
   sequence<string> get_tokens();
+};
+
+// Models
+interface RustBPE {
+  [Throws=TokenizersError]
+  constructor(
+    record<string, u32>? vocab,
+    sequence<sequence<string>>? merges,
+    string? vocab_file,
+    string? merges_file,
+    u32? cache_capacity,
+    float? dropout,
+    string? unk_token,
+    string? continuing_subword_prefix,
+    string? end_of_word_suffix,
+    boolean? fuse_unk
+  );
+
+  string? get_unk_token();
 };

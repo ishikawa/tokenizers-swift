@@ -74,3 +74,30 @@ public struct Encoding {
         self.encoding.getTokens()
     }
 }
+
+//MARK:- Models
+
+public class BPE {
+    let model: RustBpe
+
+    public init(
+        vocab: [String: UInt32]? = nil,
+        merges: [[String]]? = nil,
+        cacheCapacity: UInt32? = nil,
+        dropout: Float? = nil,
+        unkToken: String? = nil,
+        continuingSubwordPrefix: String? = nil,
+        endOfWordSuffix: String? = nil,
+        fuseUnk: Bool = false
+    ) throws {
+        self.model = try RustBpe(
+            vocab: vocab, merges: merges, vocabFile: nil, mergesFile: nil,
+            cacheCapacity: cacheCapacity,
+            dropout: dropout, unkToken: unkToken, continuingSubwordPrefix: continuingSubwordPrefix,
+            endOfWordSuffix: endOfWordSuffix, fuseUnk: fuseUnk)
+    }
+
+    public var unkToken: String? {
+        self.model.getUnkToken()
+    }
+}

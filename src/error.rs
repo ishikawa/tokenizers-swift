@@ -8,8 +8,13 @@ pub enum TokenizersError {
         #[from]
         source: tk::tokenizer::Error,
     },
-    #[error("Value error: {message}")]
-    ValueError { message: String },
+
+    // From python bindings
+    #[error("Exception: {0}")]
+    Exception(String),
+
+    #[error("Value error: {0}")]
+    ValueError(String),
 }
 
 pub type Result<T> = std::result::Result<T, TokenizersError>;
