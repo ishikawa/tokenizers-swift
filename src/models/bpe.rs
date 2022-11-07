@@ -1,7 +1,38 @@
 use crate::error::{Result, TokenizersError};
+use crate::UniffiCustomTypeConverter;
 use std::sync::Arc;
-use tk::models::bpe::{Merges, Vocab, BPE};
+use tk::models::bpe::{Vocab, BPE};
 use tokenizers as tk;
+
+impl UniffiCustomTypeConverter for tk::models::bpe::Merges {
+    type Builtin = Vec<Vec<String>>;
+
+    fn into_custom(v_merges: Self::Builtin) -> uniffi::Result<Self>
+    where
+        Self: Sized,
+    {
+        let mut merges: tk::models::bpe::Merges = vec![];
+
+        for (i, m) in v_merges.iter().enumerate() {
+            if m.len() != 2 {
+                return Err(TokenizersError::ValueError(format!(
+                    "The element #{} in `merges` must be a list containing 2 elements but was {}",
+                    i,
+                    m.len()
+                ))
+                .into());
+            }
+
+            merges.push((m[0].clone(), m[1].clone()));
+        }
+
+        Ok(merges)
+    }
+
+    fn from_custom(obj: Self) -> Self::Builtin {
+        obj.iter().map(|m| vec![m.0.clone(), m.1.clone()]).collect()
+    }
+}
 
 pub struct RustBPE {
     model: Arc<tk::models::bpe::BPE>,
@@ -10,8 +41,7 @@ pub struct RustBPE {
 impl RustBPE {
     pub fn new(
         vocab: Option<tk::models::bpe::Vocab>,
-        // UniFFI doesn't support tuple type.
-        merges: Option<Vec<Vec<String>>>,
+        merges: Option<tk::models::bpe::Merges>,
         vocab_file: Option<String>,
         merges_file: Option<String>,
         // UniFFI doesn't support u32 type.
@@ -33,19 +63,7 @@ impl RustBPE {
 
         let mut builder = tk::models::bpe::BPE::builder();
 
-        if let (Some(vocab), Some(v_merges)) = (vocab, merges) {
-            let mut merges: tk::models::bpe::Merges = vec![];
-
-            for (i, m) in v_merges.iter().enumerate() {
-                if m.len() != 2 {
-                    return Err(TokenizersError::ValueError(
-                        format!("The element #{} in `merges` must be a list containing 2 elements but was {}", i, m.len())
-                    ));
-                }
-
-                merges.push((m[0].clone(), m[1].clone()));
-            }
-
+        if let (Some(vocab), Some(merges)) = (vocab, merges) {
             builder = builder.vocab_and_merges(vocab, merges);
         }
         if let (Some(vocab_file), Some(merges_file)) = (vocab_file, merges_file) {
@@ -79,14 +97,25 @@ impl RustBPE {
         })
     }
 
-    pub fn read_file(vocab: &str, merges: &str) -> Result<(Vocab, Merges)> {
-        let vocab_and_merges = BPE::read_file(vocab, merges).map_err(|e| {
-            TokenizersError::Exception(format!("Error while reading vocab & merges files: {}", e))
-        })?;
-        return Ok(vocab_and_merges);
-    }
-
     pub fn get_unk_token(&self) -> Option<String> {
         self.model.get_unk_token().clone()
     }
+}
+
+// Associated functions
+#[derive(Debug)]
+pub struct RustBPEReadFileReturn {
+    pub vocab: Vocab,
+    pub merges: tk::models::bpe::Merges,
+}
+
+pub fn bpe_read_file(vocab: &str, merges: &str) -> Result<RustBPEReadFileReturn> {
+    let vocab_and_merges = BPE::read_file(vocab, merges).map_err(|e| {
+        TokenizersError::Exception(format!("Error while reading vocab & merges files: {}", e))
+    })?;
+
+    return Ok(RustBPEReadFileReturn {
+        vocab: vocab_and_merges.0,
+        merges: vocab_and_merges.1,
+    });
 }
