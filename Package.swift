@@ -21,8 +21,8 @@ let package = Package(
         .target(
             name: "RustTokenizersFFI",
             dependencies: []),
-        .testTarget(
-            name: "TokenizersTests",
-            dependencies: ["Tokenizers"]),
+        // .testTarget(
+        //     name: "TokenizersTests",
+        //     dependencies: ["Tokenizers"]),
     ]
 )
