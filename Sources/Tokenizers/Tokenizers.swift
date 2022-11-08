@@ -3,7 +3,7 @@
 public class Tokenizer {
     let tokenizer: RustTokenizer
 
-    /// Instantiate a new `Tokenizer` from an existing file on the
+    /// Instantiate a new ``Tokenizer`` from an existing file on the
     /// Hugging Face Hub.
     ///
     /// - Parameters:
@@ -29,13 +29,15 @@ public class Tokenizer {
     ///
     /// Here are some examples of the inputs that are accepted
     ///
-    ///     encode("A single sequence")`
-    ///     encode("A sequence", "And its pair")`
-    ///     encode([ "A", "pre", "tokenized", "sequence" ], is_pretokenized=True)`
-    ///     encode(
-    ///       [ "A", "pre", "tokenized", "sequence" ], [ "And", "its", "pair" ],
-    ///       is_pretokenized=True
-    ///     )
+    /// ```
+    /// encode("A single sequence")`
+    /// encode("A sequence", "And its pair")`
+    /// encode([ "A", "pre", "tokenized", "sequence" ], is_pretokenized=True)`
+    /// encode(
+    ///   [ "A", "pre", "tokenized", "sequence" ], [ "And", "its", "pair" ],
+    ///   is_pretokenized=True
+    /// )
+    /// ```
     ///
     /// - Parameters:
     ///
@@ -44,17 +46,17 @@ public class Tokenizer {
     ///               If `is_pretokenized=False`: ``TextInputSequence``.
     ///               If ``is_pretokenized=True``: `~tokenizers.PreTokenizedInputSequence`
     ///
-    ///   - pair (:obj:`~tokenizers.InputSequence`, `optional`):
-    ///         An optional input sequence. The expected format is the same that for ``sequence``.
+    ///   - pair:
+    ///         An optional input sequence. The expected format is the same that for `sequence`.
     ///
-    ///   - is_pretokenized (:obj:`bool`, defaults to :obj:`False`):
+    ///   - is_pretokenized:
     ///         Whether the input is already pre-tokenized
     ///
-    ///   - add_special_tokens (:obj:`bool`, defaults to :obj:`True`):
+    ///   - add_special_tokens:
     ///         Whether to add the special tokens
     ///
     /// - Returns:
-    ///     :class:`~tokenizers.Encoding`: The encoded result
+    ///     The encoded result
     ///
     public func encode(_ input: String, addSpecialTokens: Bool = true) throws -> Encoding {
         let encoding = try self.tokenizer.encode(input: input, addSpecialTokens: addSpecialTokens)
@@ -100,7 +102,7 @@ public class BPE {
     /// - Returns:
     ///     A `Tuple` with the vocab and the merges:
     ///     The vocabulary and merges loaded into memory
-    public func read_file(
+    public static func read_file(
         vocabFileWithPath vocabPath: String, mergesFileWithPath mergesPath: String
     ) throws -> (Vocab, Merges) {
         let v = try modelsBpeBpeReadFile(vocab: vocabPath, merges: mergesPath)
@@ -131,12 +133,14 @@ public class BPE {
     ///
     /// This method is roughly equivalent to doing:
     ///
-    ///    let (vocab, merges) = BPE.read_file(vocabFileWithPath: vocab_filename, mergesFileWithPath: merges_filename)
-    ///    let bpe = BPE(vocab: vocab, merges: merges)
+    /// ```
+    /// let (vocab, merges) = BPE.read_file(vocabFileWithPath: vocab_filename, mergesFileWithPath: merges_filename)
+    /// let bpe = BPE(vocab: vocab, merges: merges)
+    /// ```
     ///
     /// If you don't need to keep the `vocab, merges` values lying around,
     /// this method is more optimized than manually calling
-    /// `read_file(vocabFileWithPath:mergesFileWithPath:)` to initialize a ``BPE``.
+    /// ``read_file(vocabFileWithPath:mergesFileWithPath:)`` to initialize a ``BPE``.
     ///
     /// - Parameters:
     ///     - vocabFile:
@@ -145,7 +149,7 @@ public class BPE {
     ///     - mergesFile:
     ///         The path to a `merges.txt` file
     ///
-    /// Returns:
+    /// - Returns:
     ///     An instance of BPE loaded from these files
     public init(
         vocabFileWithPath vocabFile: String,
