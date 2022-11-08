@@ -80,27 +80,30 @@ public typealias Vocab = [String: UInt32]
 
 public typealias Merges = [(String, String)]
 
+/// A [Byte-Pair Encoding (BPE)](https://aclanthology.org/P16-1162/) model.
 public class BPE {
     let model: RustBpe
 
-    /// Read a :obj:`vocab.json` and a :obj:`merges.txt` files
+    /// Read a `vocab.json` and a `merges.txt` files.
     ///
     /// This method provides a way to read and parse the content of these files,
     /// returning the relevant data structures. If you want to instantiate some BPE models
     /// from memory, this method gives you the expected input from the standard files.
     ///
     /// - Parameters:
-    ///     - vocab:
-    ///         The path to a :obj:`vocab.json` file
+    ///     - vocabPath:
+    ///         The path to a `vocab.json` file
     ///
-    ///     - merges:
-    ///         The path to a :obj:`merges.txt` file
+    ///     - mergesPath:
+    ///         The path to a `merges.txt` file
     ///
     /// - Returns:
-    ///     A :obj:`Tuple` with the vocab and the merges:
-    ///         The vocabulary and merges loaded into memory
-    public func read_file(vocab: String, merges: String) throws -> (Vocab, Merges) {
-        let v = try modelsBpeBpeReadFile(vocab: vocab, merges: merges)
+    ///     A `Tuple` with the vocab and the merges:
+    ///     The vocabulary and merges loaded into memory
+    public func read_file(
+        vocabFileWithPath vocabPath: String, mergesFileWithPath mergesPath: String
+    ) throws -> (Vocab, Merges) {
+        let v = try modelsBpeBpeReadFile(vocab: vocabPath, merges: mergesPath)
         let m = v.merges.map { ($0[0], $0[1]) }
         return (v.vocab, m)
     }
@@ -119,6 +122,43 @@ public class BPE {
 
         self.model = try RustBpe(
             vocab: vocab, merges: merges, vocabFile: nil, mergesFile: nil,
+            cacheCapacity: cacheCapacity,
+            dropout: dropout, unkToken: unkToken, continuingSubwordPrefix: continuingSubwordPrefix,
+            endOfWordSuffix: endOfWordSuffix, fuseUnk: fuseUnk)
+    }
+
+    /// Instantiate a BPE model from the given files.
+    ///
+    /// This method is roughly equivalent to doing:
+    ///
+    ///    let (vocab, merges) = BPE.read_file(vocabFileWithPath: vocab_filename, mergesFileWithPath: merges_filename)
+    ///    let bpe = BPE(vocab: vocab, merges: merges)
+    ///
+    /// If you don't need to keep the `vocab, merges` values lying around,
+    /// this method is more optimized than manually calling
+    /// `read_file(vocabFileWithPath:mergesFileWithPath:)` to initialize a ``BPE``.
+    ///
+    /// - Parameters:
+    ///     - vocabFile:
+    ///         The path to a `vocab.json` file
+    ///
+    ///     - mergesFile:
+    ///         The path to a `merges.txt` file
+    ///
+    /// Returns:
+    ///     An instance of BPE loaded from these files
+    public init(
+        vocabFileWithPath vocabFile: String,
+        mergesFileWithPath mergesFile: String,
+        cacheCapacity: UInt32? = nil,
+        dropout: Float? = nil,
+        unkToken: String? = nil,
+        continuingSubwordPrefix: String? = nil,
+        endOfWordSuffix: String? = nil,
+        fuseUnk: Bool = false
+    ) throws {
+        self.model = try RustBpe(
+            vocab: nil, merges: nil, vocabFile: vocabFile, mergesFile: mergesFile,
             cacheCapacity: cacheCapacity,
             dropout: dropout, unkToken: unkToken, continuingSubwordPrefix: continuingSubwordPrefix,
             endOfWordSuffix: endOfWordSuffix, fuseUnk: fuseUnk)
