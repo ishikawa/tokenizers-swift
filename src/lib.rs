@@ -4,10 +4,10 @@ pub mod tokenizer;
 pub mod trainers;
 pub use crate::error::TokenizersError;
 pub use crate::models::bpe::{
-    bpe_read_file as models_bpe_bpe_read_file, RustBPE, RustBPEReadFileReturn,
+    bpe_read_file as models_bpe_bpe_read_file, RustBpe, RustBpeReadFileReturn,
 };
 pub use crate::tokenizer::{RustAddedToken, RustEncoding, RustTokenizer};
-pub use crate::trainers::{RustBPETrainer, RustSpecialToken};
+pub use crate::trainers::RustBpeTrainer;
 pub use tokenizers::models::bpe::Merges as RustMerges;
 use uniffi_macros;
 

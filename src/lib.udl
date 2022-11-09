@@ -2,7 +2,7 @@ namespace tokenizers {
   // UniFFI doesn't support associated function, so we have to define them as
   // top-level functions.
   [Throws=TokenizersError]
-  RustBPEReadFileReturn models_bpe_bpe_read_file([ByRef] string vocab, [ByRef] string merges);
+  RustBpeReadFileReturn models_bpe_bpe_read_file([ByRef] string vocab, [ByRef] string merges);
 };
 
 [Error]
@@ -47,12 +47,12 @@ interface RustAddedToken {
 [Custom]
 typedef sequence<sequence<string>> RustMerges;
 
-dictionary RustBPEReadFileReturn {
+dictionary RustBpeReadFileReturn {
   record<string, u32> vocab;
   RustMerges merges;
 };
 
-interface RustBPE {
+interface RustBpe {
   [Throws=TokenizersError]
   constructor(
     record<string, u32>? vocab,
@@ -71,18 +71,13 @@ interface RustBPE {
 };
 
 // Trainers
-dictionary RustSpecialToken {
-  RustAddedToken? token;
-  string? string;
-};
-
-interface RustBPETrainer {
+interface RustBpeTrainer {
   [Throws=TokenizersError]
   constructor(
     u64? vocab_size,
     u32? min_frequency,
     boolean? show_progress,
-    sequence<RustSpecialToken>? special_tokens,
+    sequence<RustAddedToken>? special_tokens,
     u64? limit_alphabet,
     sequence<string>? initial_alphabet,
     string? continuing_subword_prefix,

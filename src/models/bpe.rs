@@ -34,11 +34,11 @@ impl UniffiCustomTypeConverter for tk::models::bpe::Merges {
     }
 }
 
-pub struct RustBPE {
+pub struct RustBpe {
     model: Arc<tk::models::bpe::BPE>,
 }
 
-impl RustBPE {
+impl RustBpe {
     pub fn new(
         vocab: Option<tk::models::bpe::Vocab>,
         merges: Option<tk::models::bpe::Merges>,
@@ -104,17 +104,17 @@ impl RustBPE {
 
 // Associated functions
 #[derive(Debug)]
-pub struct RustBPEReadFileReturn {
+pub struct RustBpeReadFileReturn {
     pub vocab: Vocab,
     pub merges: tk::models::bpe::Merges,
 }
 
-pub fn bpe_read_file(vocab: &str, merges: &str) -> Result<RustBPEReadFileReturn> {
+pub fn bpe_read_file(vocab: &str, merges: &str) -> Result<RustBpeReadFileReturn> {
     let vocab_and_merges = BPE::read_file(vocab, merges).map_err(|e| {
         TokenizersError::Exception(format!("Error while reading vocab & merges files: {}", e))
     })?;
 
-    return Ok(RustBPEReadFileReturn {
+    return Ok(RustBpeReadFileReturn {
         vocab: vocab_and_merges.0,
         merges: vocab_and_merges.1,
     });

@@ -239,3 +239,50 @@ public class BPE {
         self.model.getUnkToken()
     }
 }
+
+//MARK:- Trainers
+public enum SpecialToken: ExpressibleByStringLiteral {
+    case token(AddedToken)
+    case string(String)
+
+    public init(stringLiteral value: String) {
+        self = .string(value)
+    }
+}
+
+/// Trainer capable of training a BPE model
+public class BPETrainer {
+    let trainer: RustBpeTrainer
+
+    public init(
+        vocabSize: UInt64? = nil,
+        minFrequency: UInt32? = nil,
+        showProgress: Bool? = nil,
+        specialTokens: [SpecialToken]? = nil,
+        limitAlphabet: UInt64? = nil,
+        initialAlphabet: [String]? = nil,
+        continuingSubwordPrefix: String? = nil,
+        endOfWordSuffix: String? = nil
+    ) throws {
+        let specialTokens = specialTokens?.map({
+            switch $0 {
+            case .token(let token):
+                return token.token
+            case .string(let value):
+                return RustAddedToken(
+                    content: value,
+                    singleWord: nil,
+                    lstrip: nil,
+                    rstrip: nil,
+                    normalized: nil,
+                    special: true)
+            }
+        })
+
+        self.trainer = try RustBpeTrainer(
+            vocabSize: vocabSize, minFrequency: minFrequency,
+            showProgress: showProgress, specialTokens: specialTokens, limitAlphabet: limitAlphabet,
+            initialAlphabet: initialAlphabet, continuingSubwordPrefix: continuingSubwordPrefix,
+            endOfWordSuffix: endOfWordSuffix)
+    }
+}
