@@ -76,7 +76,7 @@ dictionary RustSpecialToken {
   string? string;
 };
 
-interface RustBpeTrainer {
+interface RustBPETrainer {
   [Throws=TokenizersError]
   constructor(
     u64? vocab_size,
@@ -88,4 +88,6 @@ interface RustBpeTrainer {
     string? continuing_subword_prefix,
     string? end_of_word_suffix
   );
+
+  sequence<RustAddedToken> get_special_tokens();
 };

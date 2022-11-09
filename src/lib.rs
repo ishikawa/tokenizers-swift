@@ -7,7 +7,7 @@ pub use crate::models::bpe::{
     bpe_read_file as models_bpe_bpe_read_file, RustBPE, RustBPEReadFileReturn,
 };
 pub use crate::tokenizer::{RustAddedToken, RustEncoding, RustTokenizer};
-pub use crate::trainers::{RustBpeTrainer, RustSpecialToken};
+pub use crate::trainers::{RustBPETrainer, RustSpecialToken};
 pub use tokenizers::models::bpe::Merges as RustMerges;
 use uniffi_macros;
 

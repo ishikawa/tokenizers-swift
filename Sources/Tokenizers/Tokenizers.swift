@@ -77,6 +77,73 @@ public struct Encoding {
     }
 }
 
+/// Represents a token that can be be added to a ``Tokenizer``.
+/// It can have special options that defines the way it should behave.
+public struct AddedToken {
+    let token: RustAddedToken
+
+    /// Initialize an AddedToken instance.
+    ///
+    /// - Parameters:
+    ///     - content: The content of the token
+    ///
+    ///     - single_word:
+    ///         Defines whether this token should only match single words. If `true`, this
+    ///         token will never match inside of a word. For example the token `ing` would match
+    ///         on `tokenizing` if this option is `false`, but not if it is `true`.
+    ///         The notion of "`inside of a word`" is defined by the word boundaries pattern in
+    ///         regular expressions (ie. the token should start and end with word boundaries).
+    ///
+    ///     - lstrip:
+    ///         Defines whether this token should strip all potential whitespaces on its left side.
+    ///         If `True`, this token will greedily match any whitespace on its left. For
+    ///         example if we try to match the token `[MASK]` with `lstrip=true`, in the text
+    ///         `"I saw a [MASK]"`, we would match on `" [MASK]"`. (Note the space on the left).
+    ///
+    ///     - rstrip:
+    ///         Defines whether this token should strip all potential whitespaces on its right
+    ///         side. If `true`, this token will greedily match any whitespace on its right.
+    ///         It works just like `lstrip` but on the right.
+    ///
+    ///     - normalized:
+    ///         Defines whether this token should match against the normalized version of the input
+    ///         text. For example, with the added token `"yesterday"`, and a normalizer in charge of
+    ///         lowercasing the text, the token could be extract from the input `"I saw a lion
+    ///         Yesterday"`.
+    ///
+    init(
+        _ content: String,
+        singleWord: Bool = false,
+        stripHeading lstrip: Bool = false,
+        stripTrailing rstrip: Bool = false,
+        normalized: Bool = true
+    ) {
+        self.token = RustAddedToken(
+            content: content, singleWord: singleWord, lstrip: lstrip, rstrip: rstrip,
+            normalized: normalized, special: false)
+    }
+
+    public var content: String {
+        self.token.getContent()
+    }
+
+    public var stripHeading: Bool {
+        self.token.getLstrip()
+    }
+
+    public var stripTrailing: Bool {
+        self.token.getRstrip()
+    }
+
+    public var normalized: Bool {
+        self.token.getNormalized()
+    }
+
+    public var special: Bool {
+        self.token.getSpecial()
+    }
+}
+
 //MARK:- Models
 public typealias Vocab = [String: UInt32]
 

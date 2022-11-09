@@ -7,7 +7,7 @@ use crate::{
 use tk::{models::bpe::BpeTrainer, AddedToken};
 use tokenizers as tk;
 
-pub struct RustBpeTrainer {
+pub struct RustBPETrainer {
     trainer: Arc<BpeTrainer>,
 }
 
@@ -18,7 +18,7 @@ pub struct RustSpecialToken {
     pub string: Option<String>,
 }
 
-impl RustBpeTrainer {
+impl RustBPETrainer {
     pub fn new(
         vocab_size: Option<u64>,
         min_frequency: Option<u32>,
@@ -82,5 +82,13 @@ impl RustBpeTrainer {
         Ok(Self {
             trainer: Arc::new(builder.build()),
         })
+    }
+
+    pub fn get_special_tokens(&self) -> Vec<Arc<RustAddedToken>> {
+        self.trainer
+            .special_tokens
+            .iter()
+            .map(|t| Arc::new(t.clone().into()))
+            .collect()
     }
 }
