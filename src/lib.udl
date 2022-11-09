@@ -27,6 +27,22 @@ interface RustEncoding {
   sequence<string> get_tokens();
 };
 
+interface RustAddedToken {
+  constructor(
+    [ByRef] string content,
+    boolean? single_word,
+    boolean? lstrip,
+    boolean? rstrip,
+    boolean? normalized,
+    boolean? special);
+
+  string get_content();
+  boolean get_lstrip();
+  boolean get_rstrip();
+  boolean get_normalized();
+  boolean get_special();
+};
+
 // Models
 [Custom]
 typedef sequence<sequence<string>> RustMerges;
@@ -43,7 +59,7 @@ interface RustBPE {
     RustMerges? merges,
     string? vocab_file,
     string? merges_file,
-    u32? cache_capacity,
+    u64? cache_capacity,
     float? dropout,
     string? unk_token,
     string? continuing_subword_prefix,

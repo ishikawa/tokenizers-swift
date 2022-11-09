@@ -113,7 +113,7 @@ public class BPE {
     public init(
         vocab: Vocab? = nil,
         merges: Merges? = nil,
-        cacheCapacity: UInt32? = nil,
+        cacheCapacity: UInt64? = nil,
         dropout: Float? = nil,
         unkToken: String? = nil,
         continuingSubwordPrefix: String? = nil,
@@ -154,7 +154,7 @@ public class BPE {
     public init(
         vocabFileWithPath vocabFile: String,
         mergesFileWithPath mergesFile: String,
-        cacheCapacity: UInt32? = nil,
+        cacheCapacity: UInt64? = nil,
         dropout: Float? = nil,
         unkToken: String? = nil,
         continuingSubwordPrefix: String? = nil,

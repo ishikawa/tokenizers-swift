@@ -44,8 +44,8 @@ impl RustBPE {
         merges: Option<tk::models::bpe::Merges>,
         vocab_file: Option<String>,
         merges_file: Option<String>,
-        // UniFFI doesn't support u32 type.
-        cache_capacity: Option<u32>,
+        // UniFFI doesn't support usize type.
+        cache_capacity: Option<u64>,
         dropout: Option<f32>,
         unk_token: Option<String>,
         continuing_subword_prefix: Option<String>,
