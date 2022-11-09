@@ -69,3 +69,23 @@ interface RustBPE {
 
   string? get_unk_token();
 };
+
+// Trainers
+dictionary RustSpecialToken {
+  RustAddedToken? token;
+  string? string;
+};
+
+interface RustBpeTrainer {
+  [Throws=TokenizersError]
+  constructor(
+    u64? vocab_size,
+    u32? min_frequency,
+    boolean? show_progress,
+    sequence<RustSpecialToken>? special_tokens,
+    u64? limit_alphabet,
+    sequence<string>? initial_alphabet,
+    string? continuing_subword_prefix,
+    string? end_of_word_suffix
+  );
+};
