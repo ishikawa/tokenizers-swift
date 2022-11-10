@@ -1,4 +1,4 @@
-use crate::{RustBpe, RustBpeTrainer, RustWhitespace, TokenizersError};
+use crate::{RustBpe, RustBpeTrainer, RustWhitespace};
 
 use super::error::Result;
 use std::sync::{Arc, RwLock};

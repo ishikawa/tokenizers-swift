@@ -21,6 +21,19 @@ public class Tokenizer {
         self.tokenizer = RustTokenizer(model: model.model)
     }
 
+    /// - Instantiate `Tokenizer` from the file at the given path.
+    ///
+    /// - Parameters:
+    ///     - path:
+    ///         A path to a local JSON file representing a previously serialized
+    ///         `Tokenizer`
+    ///
+    /// - Return:
+    ///     The new tokenizer
+    public init(contentsOfFile path: String) throws {
+        self.tokenizer = try RustTokenizer.fromFile(path: path)
+    }
+
     /// Instantiate a new ``Tokenizer`` from an existing file on the
     /// Hugging Face Hub.
     ///
