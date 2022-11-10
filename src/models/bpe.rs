@@ -1,11 +1,49 @@
 use crate::error::{Result, TokenizersError};
 use crate::utils::RustMerges;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use tk::models::bpe::{Vocab, BPE};
+use tk::models::bpe::{BpeTrainer, Vocab, BPE};
 use tokenizers as tk;
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RustBpe {
     model: Arc<tk::models::bpe::BPE>,
+}
+
+impl tk::Model for RustBpe {
+    type Trainer = BpeTrainer;
+
+    fn tokenize(&self, sequence: &str) -> tk::Result<Vec<tk::Token>> {
+        self.model.tokenize(sequence)
+    }
+
+    fn token_to_id(&self, token: &str) -> Option<u32> {
+        self.model.token_to_id(token)
+    }
+
+    fn id_to_token(&self, id: u32) -> Option<String> {
+        self.model.id_to_token(id)
+    }
+
+    fn get_vocab(&self) -> std::collections::HashMap<String, u32> {
+        self.model.get_vocab()
+    }
+
+    fn get_vocab_size(&self) -> usize {
+        self.model.get_vocab_size()
+    }
+
+    fn save(
+        &self,
+        folder: &std::path::Path,
+        prefix: Option<&str>,
+    ) -> tk::Result<Vec<std::path::PathBuf>> {
+        self.model.save(folder, prefix)
+    }
+
+    fn get_trainer(&self) -> <Self as tk::Model>::Trainer {
+        self.model.get_trainer()
+    }
 }
 
 impl RustBpe {

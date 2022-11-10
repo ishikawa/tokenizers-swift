@@ -17,6 +17,10 @@ public class Tokenizer {
         }
     }
 
+    public init(model: BPE) {
+        self.tokenizer = RustTokenizer(model: model.model)
+    }
+
     /// Instantiate a new ``Tokenizer`` from an existing file on the
     /// Hugging Face Hub.
     ///

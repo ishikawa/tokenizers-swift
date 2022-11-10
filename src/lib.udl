@@ -13,6 +13,8 @@ enum TokenizersError {
 };
 
 interface RustTokenizer {
+  constructor(RustBpe model);
+
   [Name=from_pretrained, Throws=TokenizersError]
   constructor(
     [ByRef] string identifier,

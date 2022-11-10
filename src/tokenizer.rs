@@ -1,26 +1,26 @@
-use crate::RustWhitespace;
+use crate::{RustBpe, RustWhitespace};
 
 use super::error::Result;
 use std::sync::{Arc, RwLock};
-use tk::{
-    AddedToken, DecoderWrapper, ModelWrapper, NormalizerWrapper, PostProcessorWrapper,
-    TokenizerImpl,
-};
+use tk::{AddedToken, DecoderWrapper, NormalizerWrapper, PostProcessorWrapper, TokenizerImpl};
 use tokenizers as tk;
 
-type Tokenizer = TokenizerImpl<
-    ModelWrapper,
-    NormalizerWrapper,
-    RustWhitespace,
-    PostProcessorWrapper,
-    DecoderWrapper,
->;
+type Tokenizer =
+    TokenizerImpl<RustBpe, NormalizerWrapper, RustWhitespace, PostProcessorWrapper, DecoderWrapper>;
 
 pub struct RustTokenizer {
     tokenizer: Arc<RwLock<Tokenizer>>,
 }
 
 impl RustTokenizer {
+    pub fn new(model: Arc<RustBpe>) -> Self {
+        let tokenizer = Tokenizer::new(model.as_ref().clone());
+
+        Self {
+            tokenizer: Arc::new(RwLock::new(tokenizer)),
+        }
+    }
+
     pub fn from_pretrained(
         identifier: &str,
         revision: String,
