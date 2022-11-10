@@ -70,6 +70,15 @@ interface RustBpe {
   string? get_unk_token();
 };
 
+// Pre-Tokenizers
+interface RustPreTokenizedString {
+  constructor([ByRef] string content);
+};
+
+interface RustWhitespace {
+  constructor();
+};
+
 // Trainers
 interface RustBpeTrainer {
   [Throws=TokenizersError]
