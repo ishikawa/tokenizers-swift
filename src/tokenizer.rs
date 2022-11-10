@@ -4,7 +4,7 @@ use tk::AddedToken;
 use tokenizers as tk;
 
 pub struct RustTokenizer {
-    tokenizer: Arc<tk::tokenizer::Tokenizer>,
+    tokenizer: Arc<RwLock<tk::tokenizer::Tokenizer>>,
 }
 
 impl RustTokenizer {
@@ -24,13 +24,15 @@ impl RustTokenizer {
         let tokenizer = tk::tokenizer::Tokenizer::from_pretrained(identifier, Some(params))?;
 
         Ok(Self {
-            tokenizer: Arc::new(tokenizer),
+            tokenizer: Arc::new(RwLock::new(tokenizer)),
         })
     }
 
     pub fn encode(&self, input: &str, add_special_tokens: bool) -> Result<Arc<RustEncoding>> {
         let encoding = self
             .tokenizer
+            .read()
+            .unwrap()
             .encode_char_offsets(input, add_special_tokens)?;
 
         Ok(Arc::new(RustEncoding::new(Arc::new(encoding))))
