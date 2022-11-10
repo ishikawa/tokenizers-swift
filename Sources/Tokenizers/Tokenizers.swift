@@ -355,3 +355,12 @@ public class BPETrainer {
             endOfWordSuffix: endOfWordSuffix)
     }
 }
+
+//MARK:- Pre-Tokenizers
+
+/// This pre-tokenizer simply splits using the following regex: `\w+|[^\w\s]+`
+public class Whitespace {
+    let pre_tokenizer = RustWhitespace()
+
+    public init() {}
+}
