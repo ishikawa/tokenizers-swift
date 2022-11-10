@@ -1,38 +1,8 @@
 use crate::error::{Result, TokenizersError};
-use crate::UniffiCustomTypeConverter;
+use crate::utils::RustMerges;
 use std::sync::Arc;
 use tk::models::bpe::{Vocab, BPE};
 use tokenizers as tk;
-
-impl UniffiCustomTypeConverter for tk::models::bpe::Merges {
-    type Builtin = Vec<Vec<String>>;
-
-    fn into_custom(v_merges: Self::Builtin) -> uniffi::Result<Self>
-    where
-        Self: Sized,
-    {
-        let mut merges: tk::models::bpe::Merges = vec![];
-
-        for (i, m) in v_merges.iter().enumerate() {
-            if m.len() != 2 {
-                return Err(TokenizersError::ValueError(format!(
-                    "The element #{} in `merges` must be a list containing 2 elements but was {}",
-                    i,
-                    m.len()
-                ))
-                .into());
-            }
-
-            merges.push((m[0].clone(), m[1].clone()));
-        }
-
-        Ok(merges)
-    }
-
-    fn from_custom(obj: Self) -> Self::Builtin {
-        obj.iter().map(|m| vec![m.0.clone(), m.1.clone()]).collect()
-    }
-}
 
 pub struct RustBpe {
     model: Arc<tk::models::bpe::BPE>,
@@ -41,7 +11,7 @@ pub struct RustBpe {
 impl RustBpe {
     pub fn new(
         vocab: Option<tk::models::bpe::Vocab>,
-        merges: Option<tk::models::bpe::Merges>,
+        merges: Option<RustMerges>,
         vocab_file: Option<String>,
         merges_file: Option<String>,
         // UniFFI doesn't support usize type.
