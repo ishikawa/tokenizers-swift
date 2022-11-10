@@ -166,6 +166,26 @@ public class BPE {
     ///     - mergesPath:
     ///         The path to a `merges.txt` file
     ///
+    ///     - cacheCapacity:
+    ///         The number of words that the BPE cache can contain. The cache allows
+    ///         to speed-up the process by keeping the result of the merge operations
+    ///         for a number of words.
+    ///
+    ///     - dropout:
+    ///         A float between 0 and 1 that represents the BPE dropout to use.
+    ///
+    ///     - unkToken:
+    ///         The unknown token to be used by the model.
+    ///
+    ///     - continuingSubwordPrefix:
+    ///         The prefix to attach to subword units that don't represent a beginning of word.
+    ///
+    ///     - endOfWordSuffix:
+    ///         The suffix to attach to subword units that represent an end of word.
+    ///
+    ///     - fuseUnk:
+    ///         Whether to fuse any subsequent unknown tokens into a single one
+    ///
     /// - Returns:
     ///     A `Tuple` with the vocab and the merges:
     ///     The vocabulary and merges loaded into memory
@@ -210,11 +230,31 @@ public class BPE {
     /// ``read_file(vocabFileWithPath:mergesFileWithPath:)`` to initialize a ``BPE``.
     ///
     /// - Parameters:
-    ///     - vocabFile:
+    ///     - vocabFileWithPath:
     ///         The path to a `vocab.json` file
     ///
-    ///     - mergesFile:
+    ///     - mergesFileWithPath:
     ///         The path to a `merges.txt` file
+    ///
+    ///     - cacheCapacity:
+    ///         The number of words that the BPE cache can contain. The cache allows
+    ///         to speed-up the process by keeping the result of the merge operations
+    ///         for a number of words.
+    ///
+    ///     - dropout:
+    ///         A float between 0 and 1 that represents the BPE dropout to use.
+    ///
+    ///     - unkToken:
+    ///         The unknown token to be used by the model.
+    ///
+    ///     - continuingSubwordPrefix:
+    ///         The prefix to attach to subword units that don't represent a beginning of word.
+    ///
+    ///     - endOfWordSuffix:
+    ///         The suffix to attach to subword units that represent an end of word.
+    ///
+    ///     - fuseUnk:
+    ///         Whether to fuse any subsequent unknown tokens into a single one
     ///
     /// - Returns:
     ///     An instance of BPE loaded from these files
@@ -254,6 +294,35 @@ public enum SpecialToken: ExpressibleByStringLiteral {
 public class BPETrainer {
     let trainer: RustBpeTrainer
 
+    /// Instantiate a trainer.
+    ///
+    /// - Parameters:
+    ///     - vocabSize:
+    ///         The size of the final vocabulary, including all tokens and alphabet.
+    ///
+    ///     - minFrequency:
+    ///         The minimum frequency a pair should have in order to be merged.
+    ///
+    ///     - showProgress:
+    ///         Whether to show progress bars while training.
+    ///
+    ///     - specialTokens:
+    ///         A list of special tokens the model should know of.
+    ///
+    ///     - limitAlphabet:
+    ///         The maximum different characters to keep in the alphabet.
+    ///
+    ///     - initialAlphabet:
+    ///         A list of characters to include in the initial alphabet, even
+    ///         if not seen in the training dataset.
+    ///         If the strings contain more than one character, only the first one
+    ///         is kept.
+    ///
+    ///     - continuingSubwordPrefix:
+    ///         A prefix to be used for every subword that is not a beginning-of-word.
+    ///
+    ///     - endOfWordSuffix:
+    ///         A suffix to be used for every subword that is a end-of-word.
     public init(
         vocabSize: UInt64? = nil,
         minFrequency: UInt32? = nil,
