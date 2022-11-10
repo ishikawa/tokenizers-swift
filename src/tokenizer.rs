@@ -23,6 +23,14 @@ impl RustTokenizer {
         }
     }
 
+    pub fn from_file(path: &str) -> Result<Self> {
+        let tokenizer = Tokenizer::from_file(path)?;
+
+        Ok(Self {
+            tokenizer: Arc::new(RwLock::new(tokenizer)),
+        })
+    }
+
     pub fn from_pretrained(
         identifier: &str,
         revision: String,
