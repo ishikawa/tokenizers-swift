@@ -67,6 +67,14 @@ impl RustTokenizer {
             .map_err(|e| TokenizersError::Exception(format!("train: {}", e)))
     }
 
+    pub fn save(&self, path: &str, pretty: bool) -> Result<()> {
+        self.tokenizer
+            .read()
+            .unwrap()
+            .save(path, pretty)
+            .map_err(|e| TokenizersError::Exception(format!("save: {}", e)))
+    }
+
     pub fn get_pre_tokenizer(&self) -> Option<Arc<RustWhitespace>> {
         self.tokenizer
             .read()

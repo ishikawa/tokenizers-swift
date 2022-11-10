@@ -27,6 +27,9 @@ interface RustTokenizer {
   [Throws=TokenizersError]
   void train(sequence<string> files, RustBpeTrainer? trainer);
 
+  [Throws=TokenizersError]
+  void save([ByRef] string path, boolean pretty);
+
   RustWhitespace? get_pre_tokenizer();
 
   void set_pre_tokenizer(RustWhitespace pre_tokenizer);

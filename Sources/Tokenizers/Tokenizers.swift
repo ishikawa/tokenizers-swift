@@ -96,6 +96,18 @@ public class Tokenizer {
     public func train(files: [String], trainer: BPETrainer? = nil) throws {
         try self.tokenizer.train(files: files, trainer: trainer?.trainer)
     }
+
+    /// - Save`Tokenizer` to the file at the given path.
+    ///
+    /// - Parameters:
+    ///     - path:
+    ///         A path to a file in which to save the serialized tokenizer.
+    ///
+    ///     - pretty:
+    ///         Whether the JSON file should be pretty formatted.
+    public func save(to path: String, pretty: Bool = true) throws {
+        try self.tokenizer.save(path: path, pretty: pretty)
+    }
 }
 
 public struct Encoding {
