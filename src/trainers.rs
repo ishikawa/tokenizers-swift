@@ -1,28 +1,38 @@
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 use crate::{
     error::{Result, TokenizersError},
     RustAddedToken, RustBpe,
 };
-use tk::{
-    models::bpe::{BpeTrainer, BPE},
-    Trainer,
-};
+use serde::{Deserialize, Serialize};
+use tk::{models::bpe::BpeTrainer, Trainer};
 use tokenizers as tk;
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct RustBpeTrainer {
-    trainer: Arc<BpeTrainer>,
+    trainer: Arc<RwLock<BpeTrainer>>,
+}
+
+impl From<BpeTrainer> for RustBpeTrainer {
+    fn from(trainer: BpeTrainer) -> Self {
+        Self {
+            trainer: Arc::new(RwLock::new(trainer)),
+        }
+    }
 }
 
 impl Trainer for RustBpeTrainer {
     type Model = RustBpe;
 
     fn should_show_progress(&self) -> bool {
-        self.trainer.should_show_progress()
+        self.trainer.read().unwrap().should_show_progress()
     }
 
     fn train(&self, model: &mut Self::Model) -> tk::Result<Vec<tk::AddedToken>> {
-        self.trainer.train(model)
+        self.trainer
+            .read()
+            .unwrap()
+            .train(&mut model.model.write().unwrap())
     }
 
     fn feed<I, S, F>(&mut self, iterator: I, process: F) -> tk::Result<()>
@@ -31,7 +41,7 @@ impl Trainer for RustBpeTrainer {
         S: AsRef<str> + Send,
         F: Fn(&str) -> tk::Result<Vec<String>> + Sync,
     {
-        self.feed(iterator, process)
+        self.trainer.write().unwrap().feed(iterator, process)
     }
 }
 
@@ -84,12 +94,14 @@ impl RustBpeTrainer {
         }
 
         Ok(Self {
-            trainer: Arc::new(builder.build()),
+            trainer: Arc::new(RwLock::new(builder.build())),
         })
     }
 
     pub fn get_special_tokens(&self) -> Vec<Arc<RustAddedToken>> {
         self.trainer
+            .read()
+            .unwrap()
             .special_tokens
             .iter()
             .map(|t| Arc::new(t.clone().into()))

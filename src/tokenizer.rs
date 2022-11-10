@@ -53,10 +53,10 @@ impl RustTokenizer {
         Ok(Arc::new(RustEncoding::new(Arc::new(encoding))))
     }
 
-    fn train(&self, files: Vec<String>, trainer: Option<Arc<RustBpeTrainer>>) -> Result<()> {
+    pub fn train(&self, files: Vec<String>, trainer: Option<Arc<RustBpeTrainer>>) -> Result<()> {
         let mut trainer = trainer.map_or_else(
             || self.tokenizer.read().unwrap().get_model().get_trainer(),
-            |t| t.trainer,
+            |t| t.as_ref().clone(),
         );
 
         self.tokenizer
@@ -64,9 +64,7 @@ impl RustTokenizer {
             .unwrap()
             .train_from_files(&mut trainer, files)
             .map(|_| {})
-            .map_err(|e| {
-                TokenizersError::ValueError("`vocab` and `merges` must be both specified".into())
-            })
+            .map_err(|e| TokenizersError::Exception(format!("train: {}", e)))
     }
 
     pub fn get_pre_tokenizer(&self) -> Option<Arc<RustWhitespace>> {

@@ -24,6 +24,9 @@ interface RustTokenizer {
   [Throws=TokenizersError]
   RustEncoding encode([ByRef] string input, boolean add_special_tokens);
 
+  [Throws=TokenizersError]
+  void train(sequence<string> files, RustBpeTrainer? trainer);
+
   RustWhitespace? get_pre_tokenizer();
 
   void set_pre_tokenizer(RustWhitespace pre_tokenizer);

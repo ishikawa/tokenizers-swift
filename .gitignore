@@ -34,3 +34,4 @@ Footer
 .build.swiftsourceinfo
 Sources/Tokenizers/RustTokenizers.swift
 Sources/RustTokenizersFFI/include/RustTokenizersFFI.h
+/data

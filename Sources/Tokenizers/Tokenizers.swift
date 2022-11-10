@@ -81,6 +81,21 @@ public class Tokenizer {
         return Encoding(encoding)
     }
 
+    /// Train the Tokenizer using the given files.
+    ///
+    /// Reads the files line by line, while keeping all the whitespace, even new lines.
+    /// If you want to train from data store in-memory, you can check
+    /// ``train_from_iterator``
+    ///
+    /// - Parameters:
+    ///     - files:
+    ///         A list of path to the files that we should use for training
+    ///
+    ///     - trainer:
+    ///         An optional trainer that should be used to train our Model
+    public func train(files: [String], trainer: BPETrainer? = nil) throws {
+        try self.tokenizer.train(files: files, trainer: trainer?.trainer)
+    }
 }
 
 public struct Encoding {
