@@ -9,6 +9,7 @@ tokenizers = "^0.13"
 uniffi = "0.21.0"
 uniffi_macros = "0.21.0"
 thiserror = "^1.0"
+serde = { version = "1.0", features = [ "derive", "rc" ] }
 
 [build-dependencies]
 uniffi_build = {version = "0.21.0", features = [ "builtin-bindgen" ]}

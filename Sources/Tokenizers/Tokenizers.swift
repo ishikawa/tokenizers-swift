@@ -3,6 +3,20 @@
 public class Tokenizer {
     let tokenizer: RustTokenizer
 
+    public var preTokenizer: Whitespace? {
+        get {
+            guard let unwrapped = self.tokenizer.getPreTokenizer() else { return nil }
+            return Whitespace(preTokenizer: unwrapped)
+        }
+        set(value) {
+            if let tok = value {
+                self.tokenizer.setPreTokenizer(preTokenizer: tok.preTokenizer)
+            } else {
+                fatalError("You cannot set preTokenizer to nil")
+            }
+        }
+    }
+
     /// Instantiate a new ``Tokenizer`` from an existing file on the
     /// Hugging Face Hub.
     ///
@@ -360,7 +374,13 @@ public class BPETrainer {
 
 /// This pre-tokenizer simply splits using the following regex: `\w+|[^\w\s]+`
 public class Whitespace {
-    let pre_tokenizer = RustWhitespace()
+    let preTokenizer: RustWhitespace
 
-    public init() {}
+    public convenience init() {
+        self.init(preTokenizer: RustWhitespace())
+    }
+
+    init(preTokenizer: RustWhitespace) {
+        self.preTokenizer = preTokenizer
+    }
 }

@@ -21,6 +21,10 @@ interface RustTokenizer {
 
   [Throws=TokenizersError]
   RustEncoding encode([ByRef] string input, boolean add_special_tokens);
+
+  RustWhitespace? get_pre_tokenizer();
+
+  void set_pre_tokenizer(RustWhitespace pre_tokenizer);
 };
 
 interface RustEncoding {
