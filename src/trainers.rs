@@ -2,12 +2,37 @@ use std::sync::Arc;
 
 use crate::{
     error::{Result, TokenizersError},
-    RustAddedToken,
+    RustAddedToken, RustBpe,
 };
-use tk::models::bpe::BpeTrainer;
+use tk::{
+    models::bpe::{BpeTrainer, BPE},
+    Trainer,
+};
 use tokenizers as tk;
+
 pub struct RustBpeTrainer {
     trainer: Arc<BpeTrainer>,
+}
+
+impl Trainer for RustBpeTrainer {
+    type Model = RustBpe;
+
+    fn should_show_progress(&self) -> bool {
+        self.trainer.should_show_progress()
+    }
+
+    fn train(&self, model: &mut Self::Model) -> tk::Result<Vec<tk::AddedToken>> {
+        self.trainer.train(model)
+    }
+
+    fn feed<I, S, F>(&mut self, iterator: I, process: F) -> tk::Result<()>
+    where
+        I: Iterator<Item = S> + Send,
+        S: AsRef<str> + Send,
+        F: Fn(&str) -> tk::Result<Vec<String>> + Sync,
+    {
+        self.feed(iterator, process)
+    }
 }
 
 impl RustBpeTrainer {

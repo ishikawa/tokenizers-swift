@@ -1,5 +1,6 @@
 use crate::error::{Result, TokenizersError};
 use crate::utils::RustMerges;
+use crate::RustBpeTrainer;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tk::models::bpe::{BpeTrainer, Vocab, BPE};
@@ -11,7 +12,7 @@ pub struct RustBpe {
 }
 
 impl tk::Model for RustBpe {
-    type Trainer = BpeTrainer;
+    type Trainer = RustBpeTrainer;
 
     fn tokenize(&self, sequence: &str) -> tk::Result<Vec<tk::Token>> {
         self.model.tokenize(sequence)

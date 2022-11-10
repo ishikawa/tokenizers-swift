@@ -1,8 +1,10 @@
-use crate::{RustBpe, RustWhitespace};
+use crate::{RustBpe, RustBpeTrainer, RustWhitespace, TokenizersError};
 
 use super::error::Result;
 use std::sync::{Arc, RwLock};
-use tk::{AddedToken, DecoderWrapper, NormalizerWrapper, PostProcessorWrapper, TokenizerImpl};
+use tk::{
+    AddedToken, DecoderWrapper, Model, NormalizerWrapper, PostProcessorWrapper, TokenizerImpl,
+};
 use tokenizers as tk;
 
 type Tokenizer =
@@ -49,6 +51,22 @@ impl RustTokenizer {
             .encode_char_offsets(input, add_special_tokens)?;
 
         Ok(Arc::new(RustEncoding::new(Arc::new(encoding))))
+    }
+
+    fn train(&self, files: Vec<String>, trainer: Option<Arc<RustBpeTrainer>>) -> Result<()> {
+        let mut trainer = trainer.map_or_else(
+            || self.tokenizer.read().unwrap().get_model().get_trainer(),
+            |t| t.trainer,
+        );
+
+        self.tokenizer
+            .write()
+            .unwrap()
+            .train_from_files(&mut trainer, files)
+            .map(|_| {})
+            .map_err(|e| {
+                TokenizersError::ValueError("`vocab` and `merges` must be both specified".into())
+            })
     }
 
     pub fn get_pre_tokenizer(&self) -> Option<Arc<RustWhitespace>> {
