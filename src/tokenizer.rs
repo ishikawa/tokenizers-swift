@@ -67,20 +67,16 @@ impl RustTokenizer {
             |t| t.as_ref().clone(),
         );
 
-        self.tokenizer
+        Ok(self
+            .tokenizer
             .write()
             .unwrap()
             .train_from_files(&mut trainer, files)
-            .map(|_| {})
-            .map_err(|e| TokenizersError::Exception(format!("train: {}", e)))
+            .map(|_| {})?)
     }
 
     pub fn save(&self, path: &str, pretty: bool) -> Result<()> {
-        self.tokenizer
-            .read()
-            .unwrap()
-            .save(path, pretty)
-            .map_err(|e| TokenizersError::Exception(format!("save: {}", e)))
+        Ok(self.tokenizer.read().unwrap().save(path, pretty)?)
     }
 
     pub fn get_pre_tokenizer(&self) -> Option<Arc<RustWhitespace>> {
