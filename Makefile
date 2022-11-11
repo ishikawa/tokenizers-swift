@@ -1,11 +1,16 @@
-.PHONY: all clean outdir build
+.PHONY: all clean outdir build release
 
 BUILD_DIR = .build
 
 GENERATED_SRC = Sources/Tokenizers/RustTokenizers.swift \
-								Sources/RustTokenizersFFI/include/RustTokenizersFFI.h
+				Sources/RustTokenizersFFI/include/RustTokenizersFFI.h
+
+CARGO_BUILD_OPTS =
 
 all: build
+
+release: CARGO_BUILD_OPTS = --release
+release: build
 
 # Detect cargo's `OUT_DIR`
 outdir:
@@ -16,7 +21,7 @@ outdir:
 		(.package_id | contains(\"$${pkg}\")) then .out_dir else empty end" > ${BUILD_DIR}/out_dir.txt
 
 build: outdir
-	cargo build
+	cargo build ${CARGO_BUILD_OPTS}
 	cp $$(cat ${BUILD_DIR}/out_dir.txt)/*.{h,swift} ${BUILD_DIR}/
 	cp ${BUILD_DIR}/RustTokenizers.swift Sources/Tokenizers/
 	cp ${BUILD_DIR}/RustTokenizersFFI.h Sources/RustTokenizersFFI/include/
