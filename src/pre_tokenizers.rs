@@ -46,6 +46,7 @@ impl RustPreTokenizedString {
 /// This pre-tokenizer simply splits using the following regex: `\w+|[^\w\s]+`
 #[derive(Clone, Serialize, Deserialize)]
 pub struct RustWhitespace {
+    #[serde(flatten)]
     pre_tokenizer: Arc<Whitespace>,
 }
 

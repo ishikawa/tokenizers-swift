@@ -5,7 +5,10 @@ use crate::{
     RustAddedToken, RustBpe,
 };
 use serde::{Deserialize, Serialize};
-use tk::{models::bpe::BpeTrainer, Trainer};
+use tk::{
+    models::{bpe::BpeTrainer, TrainerWrapper},
+    ModelWrapper, Trainer,
+};
 use tokenizers as tk;
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -21,6 +24,16 @@ impl From<BpeTrainer> for RustBpeTrainer {
     }
 }
 
+impl From<TrainerWrapper> for RustBpeTrainer {
+    fn from(trainer: TrainerWrapper) -> Self {
+        if let TrainerWrapper::BpeTrainer(bpe_trainer) = trainer {
+            bpe_trainer.into()
+        } else {
+            panic!("trainer must be BpeTrainer")
+        }
+    }
+}
+
 impl Trainer for RustBpeTrainer {
     type Model = RustBpe;
 
@@ -29,10 +42,13 @@ impl Trainer for RustBpeTrainer {
     }
 
     fn train(&self, model: &mut Self::Model) -> tk::Result<Vec<tk::AddedToken>> {
-        self.trainer
-            .read()
-            .unwrap()
-            .train(&mut model.model.write().unwrap())
+        let mut m = model.model.write().unwrap();
+
+        if let ModelWrapper::BPE(b) = &mut *m {
+            self.trainer.read().unwrap().train(b)
+        } else {
+            panic!()
+        }
     }
 
     fn feed<I, S, F>(&mut self, iterator: I, process: F) -> tk::Result<()>

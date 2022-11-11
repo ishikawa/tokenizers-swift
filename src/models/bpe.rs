@@ -4,11 +4,13 @@ use crate::RustBpeTrainer;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, RwLock};
 use tk::models::bpe::{Vocab, BPE};
+use tk::ModelWrapper;
 use tokenizers as tk;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct RustBpe {
-    pub(crate) model: Arc<RwLock<tk::models::bpe::BPE>>,
+    #[serde(flatten)]
+    pub(crate) model: Arc<RwLock<ModelWrapper>>,
 }
 
 impl tk::Model for RustBpe {
@@ -100,14 +102,26 @@ impl RustBpe {
         }
 
         let bpe = builder.build()?;
+        let wrapper = ModelWrapper::BPE(bpe);
 
         Ok(Self {
-            model: Arc::new(RwLock::new(bpe)),
+            model: Arc::new(RwLock::new(wrapper)),
         })
     }
 
+    fn with_bpe<F, R>(&self, callback: F) -> R
+    where
+        F: FnOnce(&BPE) -> R,
+    {
+        if let ModelWrapper::BPE(bpe) = self.model.read().as_deref().unwrap() {
+            callback(bpe)
+        } else {
+            panic!()
+        }
+    }
+
     pub fn get_unk_token(&self) -> Option<String> {
-        self.model.read().unwrap().get_unk_token().clone()
+        self.with_bpe(|bpe| bpe.get_unk_token().clone())
     }
 }
 

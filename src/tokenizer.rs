@@ -44,6 +44,7 @@ impl RustTokenizer {
                 .map(|(k, v)| (k.to_string(), v.to_string()))
                 .collect(),
         };
+
         let tokenizer = Tokenizer::from_pretrained(identifier, Some(params))?;
 
         Ok(Self {
