@@ -16,7 +16,8 @@ let package = Package(
             name: "Tokenizers",
             dependencies: ["RustTokenizersFFI"],
             linkerSettings: [
-                .linkedLibrary("tokenizers")
+                .linkedLibrary("tokenizers"),
+                .unsafeFlags(["-L./target/debug"]),
             ]),
         .target(
             name: "RustTokenizersFFI",
