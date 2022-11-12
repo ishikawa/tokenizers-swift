@@ -30,7 +30,8 @@ build:
 	cp ${BUILD_DIR}/RustTokenizersFFI.h Sources/RustTokenizersFFI/include/
 
 test: build
-	swift test
+	ls -la ./target/debug
+	swift test -Xlinker="-Ltarget/debug"
 
 clean:
 	cargo clean
