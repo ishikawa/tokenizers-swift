@@ -31,7 +31,7 @@ build:
 
 test: build
 	ls -la ./target/debug
-	swift test -Xlinker="-Ltarget/debug"
+	swift test -Xlinker="-L./target/debug"
 
 clean:
 	cargo clean
