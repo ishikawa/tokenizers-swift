@@ -7,7 +7,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use tk::{
     models::{bpe::BpeTrainer, TrainerWrapper},
-    ModelWrapper, Trainer,
+    Trainer,
 };
 use tokenizers as tk;
 
@@ -42,7 +42,7 @@ impl Trainer for RustBpeTrainer {
     }
 
     fn train(&self, model: &mut Self::Model) -> tk::Result<Vec<tk::AddedToken>> {
-        model.with_bpe_mut(|bpe| self.trainer.read().unwrap().train(bpe))
+        model.with_subtype_mut(|bpe| self.trainer.read().unwrap().train(bpe))
     }
 
     fn feed<I, S, F>(&mut self, iterator: I, process: F) -> tk::Result<()>

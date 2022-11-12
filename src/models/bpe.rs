@@ -14,7 +14,7 @@ pub struct RustBpe {
 }
 
 impl RustBpe {
-    pub(crate) fn with_bpe<F, R>(&self, callback: F) -> R
+    pub(crate) fn with_subtype<F, R>(&self, callback: F) -> R
     where
         F: FnOnce(&BPE) -> R,
     {
@@ -25,7 +25,7 @@ impl RustBpe {
         }
     }
 
-    pub(crate) fn with_bpe_mut<F, R>(&self, callback: F) -> R
+    pub(crate) fn with_subtype_mut<F, R>(&self, callback: F) -> R
     where
         F: FnOnce(&mut BPE) -> R,
     {
@@ -136,7 +136,7 @@ impl RustBpe {
     }
 
     pub fn get_unk_token(&self) -> Option<String> {
-        self.with_bpe(|bpe| bpe.get_unk_token().clone())
+        self.with_subtype(|bpe| bpe.get_unk_token().clone())
     }
 }
 

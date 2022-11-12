@@ -1,8 +1,9 @@
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 use crate::error::{Result, TokenizersError};
 use crate::utils::RustOffsets;
 use serde::{Deserialize, Serialize};
+use tk::PreTokenizerWrapper;
 use tk::{pre_tokenizers::whitespace::Whitespace, PreTokenizedString, PreTokenizer};
 use tokenizers as tk;
 
@@ -47,19 +48,21 @@ impl RustPreTokenizedString {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct RustWhitespace {
     #[serde(flatten)]
-    pre_tokenizer: Arc<Whitespace>,
+    pub(crate) pre_tokenizer: Arc<RwLock<PreTokenizerWrapper>>,
 }
 
 impl PreTokenizer for RustWhitespace {
     fn pre_tokenize(&self, normalized: &mut PreTokenizedString) -> tk::Result<()> {
-        self.pre_tokenizer.pre_tokenize(normalized)
+        self.pre_tokenizer.read().unwrap().pre_tokenize(normalized)
     }
 }
 
 impl RustWhitespace {
     pub fn new() -> Self {
         Self {
-            pre_tokenizer: Arc::new(Whitespace::default()),
+            pre_tokenizer: Arc::new(RwLock::new(PreTokenizerWrapper::Whitespace(
+                Whitespace::default(),
+            ))),
         }
     }
 
@@ -67,6 +70,8 @@ impl RustWhitespace {
         let mut pretokenized = tk::tokenizer::PreTokenizedString::from(s);
 
         self.pre_tokenizer
+            .read()
+            .unwrap()
             .pre_tokenize(&mut pretokenized)
             .map_err(|e| {
                 TokenizersError::Exception(format!("Error while pre-tokenizing: {}", e))
