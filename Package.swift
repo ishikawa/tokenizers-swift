@@ -21,8 +21,16 @@ let package = Package(
         .target(
             name: "RustTokenizersFFI",
             dependencies: []),
-        // .testTarget(
-        //     name: "TokenizersTests",
-        //     dependencies: ["Tokenizers"]),
+        .testTarget(
+            name: "TokenizersTests",
+            dependencies: ["Tokenizers"],
+            resources: [
+                // Copy Tests/TokenizerTests/Files directory into the module.
+                // That causes let SPM generate the extension of Bundle.module property.
+                .copy("Files")
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-L./target/debug"])
+            ]),
     ]
 )

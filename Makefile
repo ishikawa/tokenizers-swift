@@ -1,4 +1,4 @@
-.PHONY: all clean outdir build release
+.PHONY: all clean test outdir build release
 
 BUILD_DIR = .build
 
@@ -25,6 +25,9 @@ build: outdir
 	cp $$(cat ${BUILD_DIR}/out_dir.txt)/*.{h,swift} ${BUILD_DIR}/
 	cp ${BUILD_DIR}/RustTokenizers.swift Sources/Tokenizers/
 	cp ${BUILD_DIR}/RustTokenizersFFI.h Sources/RustTokenizersFFI/include/
+
+test: build
+	swift test
 
 clean:
 	cargo clean
