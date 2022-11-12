@@ -24,32 +24,33 @@ Then, running `swift repl` with linker option to link with the library.
 $ swift run --repl -Xlinker="-Ltarget/release"
 ```
 
-## Example
+## Quick Example
+
+Examples can be found under the [example](example/) directory. You can run each example with `swift run` command:
+
+```
+$ cd example 
+$ swift run -Xlinker -L../target/release PretrainedTokenizerExample
+Building for debugging...
+[2/2] Compiling PretrainedTokenizerExample Example.swift
+Build complete! (0.36s)
+tokens = ["[CLS]", "Hey", "there", "!", "[SEP]"]
+```
+
+### Loading a pretrained tokenizer from the Hub
 
 ```swift
-$ swift run --repl -Xlinker="-Ltarget/release"
-  > import Tokenizers
-  > let tokenizer = Tokenizer(model: BPE(unkToken: "[UNK]"))
-  > let trainer = BPETrainer(specialTokens: ["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]"])
-  > tokenizer.preTokenizer = Whitespace()
-  > let files = ["test", "train", "valid"].map { "data/wikitext-103-raw/wiki.\($0).raw" }
-  > tokenizer.train(files: files, trainer: trainer)
-  > tokenizer.save(to: "data/tokenizer-wiki.json")
-...
-  > let tokenizer = Tokenizer(contentsOfFile: "data/tokenizer-wiki.json")
-  > let output = tokenizer.encode("Hello, y'all! How are you 😁 ?")
-  > output.tokens
-$R1: [String] = 11 values {
-  [0] = "Hello"
-  [1] = ","
-  [2] = "y"
-  [3] = "\'"
-  [4] = "all"
-  [5] = "!"
-  [6] = "How"
-  [7] = "are"
-  [8] = "you"
-  [9] = "[UNK]"
-  [10] = "?"
+import Tokenizers
+
+@main
+public struct Example {
+    public private(set) var text = "Hello, World!"
+
+    public static func main() {
+        let tokenizer = try! Tokenizer(pretrained: "bert-base-cased")
+        let encoding = try! tokenizer.encode("Hey there!")
+
+        print("tokens = \(encoding.tokens)")
+    }
 }
 ```
