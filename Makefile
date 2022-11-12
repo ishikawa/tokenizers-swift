@@ -31,7 +31,7 @@ build:
 
 test: build
 	ls -la ./target/debug
-	swift test -Xlinker="-L./target/debug"
+	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:target/debug swift test
 
 clean:
 	cargo clean
