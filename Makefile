@@ -29,8 +29,8 @@ build:
 	cp ${BUILD_DIR}/RustTokenizers.swift Sources/Tokenizers/
 	cp ${BUILD_DIR}/RustTokenizersFFI.h Sources/RustTokenizersFFI/include/
 
+# We need to specify `LD_LIBRARY_PATH` on Linux environment.
 test: build
-	ls -la ./target/debug
 	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:target/debug swift test
 
 clean:
