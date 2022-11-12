@@ -42,13 +42,7 @@ impl Trainer for RustBpeTrainer {
     }
 
     fn train(&self, model: &mut Self::Model) -> tk::Result<Vec<tk::AddedToken>> {
-        let mut m = model.model.write().unwrap();
-
-        if let ModelWrapper::BPE(b) = &mut *m {
-            self.trainer.read().unwrap().train(b)
-        } else {
-            panic!()
-        }
+        model.with_bpe_mut(|bpe| self.trainer.read().unwrap().train(bpe))
     }
 
     fn feed<I, S, F>(&mut self, iterator: I, process: F) -> tk::Result<()>

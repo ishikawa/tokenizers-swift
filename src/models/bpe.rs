@@ -13,6 +13,32 @@ pub struct RustBpe {
     pub(crate) model: Arc<RwLock<ModelWrapper>>,
 }
 
+impl RustBpe {
+    pub(crate) fn with_bpe<F, R>(&self, callback: F) -> R
+    where
+        F: FnOnce(&BPE) -> R,
+    {
+        if let ModelWrapper::BPE(bpe) = self.model.read().as_deref().unwrap() {
+            callback(bpe)
+        } else {
+            panic!()
+        }
+    }
+
+    pub(crate) fn with_bpe_mut<F, R>(&self, callback: F) -> R
+    where
+        F: FnOnce(&mut BPE) -> R,
+    {
+        let mut m = self.model.write().unwrap();
+
+        if let ModelWrapper::BPE(b) = &mut *m {
+            callback(b)
+        } else {
+            panic!()
+        }
+    }
+}
+
 impl tk::Model for RustBpe {
     type Trainer = RustBpeTrainer;
 
@@ -107,17 +133,6 @@ impl RustBpe {
         Ok(Self {
             model: Arc::new(RwLock::new(wrapper)),
         })
-    }
-
-    fn with_bpe<F, R>(&self, callback: F) -> R
-    where
-        F: FnOnce(&BPE) -> R,
-    {
-        if let ModelWrapper::BPE(bpe) = self.model.read().as_deref().unwrap() {
-            callback(bpe)
-        } else {
-            panic!()
-        }
     }
 
     pub fn get_unk_token(&self) -> Option<String> {
