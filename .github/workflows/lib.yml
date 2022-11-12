@@ -16,11 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: swift-actions/setup-swift@v1
-      - name: debug
-        run: |
-          make outdir
-          cat .build/out_dir.txt
-          ls -la $(cat .build/out_dir.txt)
       - name: Build
         run: make build
       - name: Run tests (Rust)
