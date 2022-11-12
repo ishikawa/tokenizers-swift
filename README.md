@@ -29,6 +29,7 @@ $ swift run --repl -Xlinker="-Ltarget/release"
 Examples can be found under the [example](example/) directory. You can run each example with `swift run` command:
 
 ```
+$ make release
 $ cd example 
 $ swift run -Xlinker -L../target/release PretrainedTokenizerExample
 Building for debugging...
@@ -54,3 +55,66 @@ public struct Example {
     }
 }
 ```
+
+### Training and serialization
+
+Like [the original quick tour](https://huggingface.co/docs/tokenizers/quicktour), we'll show you how to build a tokenizer from scratch by using `tokenizer-swift`.
+
+In this example, you can train a new tokenizer on [wikitext-103](https://blog.einstein.ai/the-wikitext-long-term-dependency-language-modeling-dataset/) in just a few seconds (*hopefully*). First things first, you will need to download this dataset and unzip it with:
+
+```
+mkdir data
+cd data
+wget https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-raw-v1.zip
+unzip wikitext-103-raw-v1.zip
+cd ../example
+```
+
+Now you can train the tokenizer:
+
+```
+$ swift run -Xlinker -L../target/release TrainingTokenizerExample
+[00:00:09] Pre-processing files (543 Mo)            ██████████████████████████████████████████████████████████████████████████████████████████████████████████                100%
+[00:00:00] Tokenize words                           ██████████████████████████████████████████████████████████████████████████████████████████████████████████ 610142   /   610142
+[00:00:03] Count pairs                              ██████████████████████████████████████████████████████████████████████████████████████████████████████████ 610142   /   610142
+[00:00:02] Compute merges                           ██████████████████████████████████████████████████████████████████████████████████████████████████████████ 24989    /    24989
+
+Reload the trained tokenizer...
+["Hello", ",", "y", "\'", "all", "!", "How", "are", "you", "[UNK]", "?"]
+```
+
+The source code is [here](example/Sources/TrainingTokenizerExample/TrainingTokenizerExample.swift).
+
+```swift
+import Tokenizers
+
+@main
+public struct TrainingTokenizerExample {
+    public static func main() throws {
+        let tokenizer = try Tokenizer(model: BPE(unkToken: "[UNK]"))
+        let trainer = try BPETrainer(specialTokens: [
+            "[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]",
+        ])
+
+        tokenizer.preTokenizer = Whitespace()
+
+        // Train the tokenizer.
+        let files = ["test", "train", "valid"].map { "../data/wikitext-103-raw/wiki.\($0).raw" }
+        try tokenizer.train(files: files, trainer: trainer)
+
+        // Save the tokenizer in one file.
+        try tokenizer.save(to: "../data/tokenizer-wiki.json")
+
+        // Reload the tokenizer
+        print("Reload the trained tokenizer...")
+        let savedTokenizer = try Tokenizer(contentsOfFile: "../data/tokenizer-wiki.json")
+
+        // Using the tokenizer
+        let output = try savedTokenizer.encode("Hello, y'all! How are you 😁 ?")
+
+        print(output.tokens)
+        // => ["Hello", ",", "y", "\'", "all", "!", "How", "are", "you", "[UNK]", "?"]
+    }
+}
+```
+
