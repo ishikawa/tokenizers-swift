@@ -34,7 +34,7 @@ impl UniffiCustomTypeConverter for RustMerges {
     }
 }
 
-impl UniffiCustomTypeConverter for tk::Offsets {
+impl UniffiCustomTypeConverter for RustOffsets {
     type Builtin = Vec<u64>;
 
     fn into_custom(value: Self::Builtin) -> uniffi::Result<Self>
