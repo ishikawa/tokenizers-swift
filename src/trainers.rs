@@ -1,10 +1,6 @@
-use std::sync::{Arc, RwLock};
-
-use crate::{
-    error::{Result, TokenizersError},
-    RustAddedToken, RustBpe,
-};
+use crate::{error::Result, RustAddedToken, RustBpe};
 use serde::{Deserialize, Serialize};
+use std::sync::{Arc, RwLock};
 use tk::{
     models::{bpe::BpeTrainer, TrainerWrapper},
     Trainer,
@@ -57,11 +53,11 @@ impl Trainer for RustBpeTrainer {
 
 impl RustBpeTrainer {
     pub fn new(
-        vocab_size: Option<u64>,
+        vocab_size: Option<usize>,
         min_frequency: Option<u32>,
         show_progress: Option<bool>,
         special_tokens: Option<Vec<Arc<RustAddedToken>>>,
-        limit_alphabet: Option<u64>,
+        limit_alphabet: Option<usize>,
         initial_alphabet: Option<Vec<String>>,
         continuing_subword_prefix: Option<String>,
         end_of_word_suffix: Option<String>,
@@ -69,8 +65,6 @@ impl RustBpeTrainer {
         let mut builder = tk::models::bpe::BpeTrainer::builder();
 
         if let Some(vocab_size) = vocab_size {
-            let vocab_size = usize::try_from(vocab_size)
-                .map_err(|e| TokenizersError::ValueError(format!("vocab_size: {}", e)))?;
             builder = builder.vocab_size(vocab_size);
         }
         if let Some(min_frequency) = min_frequency {
@@ -84,8 +78,6 @@ impl RustBpeTrainer {
             builder = builder.special_tokens(special_tokens);
         }
         if let Some(limit_alphabet) = limit_alphabet {
-            let limit_alphabet = usize::try_from(limit_alphabet)
-                .map_err(|e| TokenizersError::ValueError(format!("limit_alphabet: {}", e)))?;
             builder = builder.limit_alphabet(limit_alphabet);
         }
         if let Some(initial_alphabet) = initial_alphabet {

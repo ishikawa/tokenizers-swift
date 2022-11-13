@@ -4,6 +4,21 @@ pub use tk::models::bpe::Merges as RustMerges;
 pub use tk::Offsets as RustOffsets;
 use tokenizers as tk;
 
+impl UniffiCustomTypeConverter for usize {
+    type Builtin = u64;
+
+    fn into_custom(value: Self::Builtin) -> uniffi::Result<Self>
+    where
+        Self: Sized,
+    {
+        Ok(usize::try_from(value)?)
+    }
+
+    fn from_custom(value: Self) -> Self::Builtin {
+        value as u64
+    }
+}
+
 impl UniffiCustomTypeConverter for RustMerges {
     type Builtin = Vec<Vec<String>>;
 

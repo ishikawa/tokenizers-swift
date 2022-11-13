@@ -4,6 +4,9 @@ typedef sequence<sequence<string>> RustMerges;
 [Custom]
 typedef sequence<u64> RustOffsets;
 
+[Custom]
+typedef u64 usize;
+
 namespace tokenizers {
   // UniFFI doesn't support associated function, so we have to define them as
   // top-level functions.
@@ -79,7 +82,7 @@ interface RustBpe {
     RustMerges? merges,
     string? vocab_file,
     string? merges_file,
-    u64? cache_capacity,
+    usize? cache_capacity,
     float? dropout,
     string? unk_token,
     string? continuing_subword_prefix,
@@ -103,11 +106,11 @@ interface RustWhitespace {
 interface RustBpeTrainer {
   [Throws=TokenizersError]
   constructor(
-    u64? vocab_size,
+    usize? vocab_size,
     u32? min_frequency,
     boolean? show_progress,
     sequence<RustAddedToken>? special_tokens,
-    u64? limit_alphabet,
+    usize? limit_alphabet,
     sequence<string>? initial_alphabet,
     string? continuing_subword_prefix,
     string? end_of_word_suffix
