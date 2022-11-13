@@ -130,6 +130,44 @@ public class Tokenizer {
     public func save(to path: String, pretty: Bool = true) throws {
         try self.tokenizer.save(path: path, pretty: pretty)
     }
+
+    /// Add the given tokens to the vocabulary
+    ///
+    /// The given tokens are added only if they don't already exist in the vocabulary.
+    /// Each token then gets a new attributed id.
+    ///
+    /// - Parameters:
+    ///     - tokens:
+    ///         The list of tokens we want to add to the vocabulary. Each token can be either a
+    ///         string or ``AddedToken`` for more customization.
+    ///
+    /// - Return:
+    ///     The number of tokens that were created in the vocabulary
+    public func addTokens(_ tokens: [AddedTokenOrString]) -> UInt64 {
+        let tokens = AddedTokenOrString.toRustAddedTokens(tokens, special: false)
+        return self.tokenizer.addTokens(tokens: tokens)
+    }
+
+    /// Add the given special tokens to the Tokenizer.
+    ///
+    /// If these tokens are already part of the vocabulary, it just let the Tokenizer know about
+    /// them. If they don't exist, the Tokenizer creates them, giving them a new id.
+    ///
+    /// These special tokens will never be processed by the model (ie won't be split into
+    /// multiple tokens), and they can be removed from the output when decoding.
+    ///
+    /// - Parameters:
+    ///     - tokens:
+    ///         The list of special tokens we want to add to the vocabulary. Each token can either
+    ///         a string or ``AddedToken`` for more
+    ///         customization.
+    ///
+    /// - Return:
+    ///     The number of tokens that were created in the vocabulary
+    public func addSpecialTokens(_ tokens: [AddedTokenOrString]) -> UInt64 {
+        let tokens = AddedTokenOrString.toRustAddedTokens(tokens, special: true)
+        return self.tokenizer.addSpecialTokens(tokens: tokens)
+    }
 }
 
 public struct Encoding {
@@ -354,12 +392,29 @@ public class BPE {
 }
 
 //MARK:- Trainers
-public enum SpecialToken: ExpressibleByStringLiteral {
+public enum AddedTokenOrString: ExpressibleByStringLiteral {
     case token(AddedToken)
     case string(String)
 
     public init(stringLiteral value: String) {
         self = .string(value)
+    }
+
+    static func toRustAddedTokens(_ tokens: [Self], special: Bool = false) -> [RustAddedToken] {
+        return tokens.map({
+            switch $0 {
+            case .token(let token):
+                return token.token
+            case .string(let value):
+                return RustAddedToken(
+                    content: value,
+                    singleWord: nil,
+                    lstrip: nil,
+                    rstrip: nil,
+                    normalized: nil,
+                    special: special)
+            }
+        })
     }
 }
 
@@ -400,25 +455,14 @@ public class BPETrainer {
         vocabSize: UInt64? = nil,
         minFrequency: UInt32? = nil,
         showProgress: Bool? = nil,
-        specialTokens: [SpecialToken]? = nil,
+        specialTokens: [AddedTokenOrString]? = nil,
         limitAlphabet: UInt64? = nil,
         initialAlphabet: [String]? = nil,
         continuingSubwordPrefix: String? = nil,
         endOfWordSuffix: String? = nil
     ) throws {
-        let specialTokens = specialTokens?.map({
-            switch $0 {
-            case .token(let token):
-                return token.token
-            case .string(let value):
-                return RustAddedToken(
-                    content: value,
-                    singleWord: nil,
-                    lstrip: nil,
-                    rstrip: nil,
-                    normalized: nil,
-                    special: true)
-            }
+        let specialTokens = specialTokens.map({
+            AddedTokenOrString.toRustAddedTokens($0, special: true)
         })
 
         self.trainer = try RustBpeTrainer(
