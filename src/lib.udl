@@ -47,6 +47,9 @@ interface RustTokenizer {
     RustInputSequence input,
     RustInputSequence? pair,
     boolean add_special_tokens);
+  
+  [Throws=TokenizersError]
+  string decode(sequence<u32> ids, boolean skip_special_tokens);
 
   [Throws=TokenizersError]
   void train(sequence<string> files, RustBpeTrainer? trainer);
@@ -69,6 +72,9 @@ interface RustTokenizer {
 
 interface RustEncoding {
   sequence<string> get_tokens();
+  sequence<u32> get_ids();
+  sequence<u32> get_type_ids();
+  sequence<u32> get_attention_mask();
 };
 
 interface RustAddedToken {

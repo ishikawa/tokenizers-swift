@@ -93,6 +93,14 @@ impl RustTokenizer {
         Ok(Arc::new(RustEncoding::new(Arc::new(encoding))))
     }
 
+    pub fn decode(&self, ids: Vec<u32>, skip_special_tokens: bool) -> Result<String> {
+        Ok(self
+            .tokenizer
+            .read()
+            .unwrap()
+            .decode(ids, skip_special_tokens)?)
+    }
+
     pub fn train(&self, files: Vec<String>, trainer: Option<Arc<RustBpeTrainer>>) -> Result<()> {
         let mut trainer = trainer.map_or_else(
             || self.tokenizer.read().unwrap().get_model().get_trainer(),
@@ -165,6 +173,18 @@ impl RustEncoding {
 
     pub fn get_tokens(&self) -> Vec<String> {
         self.encoding.get_tokens().to_vec()
+    }
+
+    pub fn get_ids(&self) -> Vec<u32> {
+        self.encoding.get_ids().to_vec()
+    }
+
+    pub fn get_type_ids(&self) -> Vec<u32> {
+        self.encoding.get_type_ids().to_vec()
+    }
+
+    pub fn get_attention_mask(&self) -> Vec<u32> {
+        self.encoding.get_attention_mask().to_vec()
     }
 }
 

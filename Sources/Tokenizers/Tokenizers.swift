@@ -138,6 +138,23 @@ public class Tokenizer {
         return Encoding(encoding)
     }
 
+    /// Decode the given list of ids back to a string
+    ///
+    /// This is used to decode anything coming back from a Language Model
+    ///
+    /// - Parameters:
+    ///     - ids:
+    ///         The list of ids that we want to decode
+    ///
+    ///     - skipSpecialTokens:
+    ///         Whether the special tokens should be removed from the decoded string
+    ///
+    /// - Returns:
+    ///      The decoded string
+    public func decode(_ ids: [UInt32], skipSpecialTokens: Bool) throws -> String {
+        return try self.tokenizer.decode(ids: ids, skipSpecialTokens: skipSpecialTokens)
+    }
+
     /// Train the Tokenizer using the given files.
     ///
     /// Reads the files line by line, while keeping all the whitespace, even new lines.
@@ -230,6 +247,18 @@ public struct Encoding {
 
     public var tokens: [String] {
         self.encoding.getTokens()
+    }
+
+    public var ids: [UInt32] {
+        self.encoding.getIds()
+    }
+
+    public var typeIds: [UInt32] {
+        self.encoding.getTypeIds()
+    }
+
+    public var attentionMask: [UInt32] {
+        self.encoding.getAttentionMask()
     }
 }
 

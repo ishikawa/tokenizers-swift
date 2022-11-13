@@ -84,4 +84,15 @@ final class TokenizerTests: XCTestCase {
                 "?",
             ])
     }
+
+    func testDecode() throws {
+        let filePath = Bundle.module.path(
+            forResource: "tokenizer-wiki", ofType: "json", inDirectory: "Files")!
+        let tokenizer = try Tokenizer(contentsOfFile: filePath)
+        let output = try tokenizer.encode("Hello, y'all! How are you 😁 ?")
+        let ids = output.ids
+        let decoded = try tokenizer.decode(ids, skipSpecialTokens: false)
+
+        XCTAssertEqual(decoded, "Hello , y ' all ! How are you [UNK] ?")
+    }
 }
