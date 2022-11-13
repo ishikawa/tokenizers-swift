@@ -80,6 +80,17 @@ impl RustTokenizer {
         Ok(self.tokenizer.read().unwrap().save(path, pretty)?)
     }
 
+    pub fn get_model(&self) -> Arc<RustBpe> {
+        Arc::new(self.tokenizer.read().unwrap().get_model().clone())
+    }
+
+    pub fn set_model(&self, model: Arc<RustBpe>) {
+        self.tokenizer
+            .write()
+            .unwrap()
+            .with_model(model.as_ref().clone());
+    }
+
     pub fn get_pre_tokenizer(&self) -> Option<Arc<RustWhitespace>> {
         self.tokenizer
             .read()

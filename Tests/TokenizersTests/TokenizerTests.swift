@@ -4,6 +4,13 @@ import XCTest
 @testable import Tokenizers
 
 final class TokenizerTests: XCTestCase {
+    func testModelProperty() throws {
+        let model = try BPE(unkToken: "[UNK]")
+        let tokenizer = Tokenizer(model: model)
+
+        XCTAssertNotNil(tokenizer.model)
+    }
+
     func testEncodeWithString() throws {
         let filePath = Bundle.module.path(
             forResource: "tokenizer-wiki", ofType: "json", inDirectory: "Files")!

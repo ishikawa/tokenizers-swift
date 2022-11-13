@@ -3,6 +3,15 @@
 public class Tokenizer {
     let tokenizer: RustTokenizer
 
+    public var model: BPE {
+        get {
+            return BPE(model: self.tokenizer.getModel())
+        }
+        set(model) {
+            self.tokenizer.setModel(model: model.model)
+        }
+    }
+
     public var preTokenizer: Whitespace? {
         get {
             guard let unwrapped = self.tokenizer.getPreTokenizer() else { return nil }
@@ -255,7 +264,7 @@ public class BPE {
         return (v.vocab, m)
     }
 
-    public init(
+    public convenience init(
         vocab: Vocab? = nil,
         merges: Merges? = nil,
         cacheCapacity: UInt64? = nil,
@@ -266,12 +275,13 @@ public class BPE {
         fuseUnk: Bool = false
     ) throws {
         let merges = merges?.map { [$0.0, $0.1] }
-
-        self.model = try RustBpe(
+        let model = try RustBpe(
             vocab: vocab, merges: merges, vocabFile: nil, mergesFile: nil,
             cacheCapacity: cacheCapacity,
             dropout: dropout, unkToken: unkToken, continuingSubwordPrefix: continuingSubwordPrefix,
             endOfWordSuffix: endOfWordSuffix, fuseUnk: fuseUnk)
+
+        self.init(model: model)
     }
 
     /// Instantiate a BPE model from the given files.
@@ -316,7 +326,7 @@ public class BPE {
     ///
     /// - Returns:
     ///     An instance of BPE loaded from these files
-    public init(
+    public convenience init(
         vocabFileWithPath vocabFile: String,
         mergesFileWithPath mergesFile: String,
         cacheCapacity: UInt64? = nil,
@@ -326,11 +336,16 @@ public class BPE {
         endOfWordSuffix: String? = nil,
         fuseUnk: Bool = false
     ) throws {
-        self.model = try RustBpe(
+        let model = try RustBpe(
             vocab: nil, merges: nil, vocabFile: vocabFile, mergesFile: mergesFile,
             cacheCapacity: cacheCapacity,
             dropout: dropout, unkToken: unkToken, continuingSubwordPrefix: continuingSubwordPrefix,
             endOfWordSuffix: endOfWordSuffix, fuseUnk: fuseUnk)
+        self.init(model: model)
+    }
+
+    init(model: RustBpe) {
+        self.model = model
     }
 
     public var unkToken: String? {

@@ -34,8 +34,10 @@ interface RustTokenizer {
   void save([ByRef] string path, boolean pretty);
 
   RustWhitespace? get_pre_tokenizer();
-
   void set_pre_tokenizer(RustWhitespace pre_tokenizer);
+
+  RustBpe get_model();
+  void set_model(RustBpe model);
 };
 
 interface RustEncoding {
