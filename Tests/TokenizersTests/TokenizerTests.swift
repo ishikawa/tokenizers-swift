@@ -52,4 +52,36 @@ final class TokenizerTests: XCTestCase {
                 "?",
             ])
     }
+
+    func testEncodeWithPreTokenized() throws {
+        let filePath = Bundle.module.path(
+            forResource: "tokenizer-wiki", ofType: "json", inDirectory: "Files")!
+        let tokenizer = try Tokenizer(contentsOfFile: filePath)
+        let output = try tokenizer.encode(
+            .preTokenized([
+                "Hello,",
+                "y'all!",
+                "How",
+                "are",
+                "you",
+                "😁",
+                "?",
+            ]))
+
+        XCTAssertEqual(
+            output.tokens,
+            [
+                "Hello",
+                ",",
+                "y",
+                "\'",
+                "all",
+                "!",
+                "How",
+                "are",
+                "you",
+                "[UNK]",
+                "?",
+            ])
+    }
 }

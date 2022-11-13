@@ -2,6 +2,37 @@ public typealias Vocab = [String: UInt32]
 
 public typealias Merges = [(String, String)]
 
+/// `InputSequence` represent all the different kinds of sequence that can be used as
+/// input of a Tokenizer. Globally, any sequence can be either a string or a list of strings,
+/// according to the operating mode of the tokenizer: raw text vs pre-tokenized.
+public enum InputSequence: ExpressibleByStringLiteral, CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .raw(let value):
+            return value
+        case .preTokenized(let tokens):
+            return tokens.description
+        }
+    }
+
+    case raw(String)
+    case preTokenized([String])
+
+    public init(stringLiteral value: String) {
+        self = .raw(value)
+    }
+
+    func toRustInputSequence() -> RustInputSequence {
+
+        switch self {
+        case .raw(let value):
+            return RustInputSequence.raw(rawValue: value)
+        case .preTokenized(let tokens):
+            return RustInputSequence.preTokenized(tokens: tokens)
+        }
+    }
+}
+
 /// A `Tokenizer` works as a pipeline. It processes some raw text as input
 /// and outputs an `Encoding`.
 public class Tokenizer {
@@ -74,36 +105,36 @@ public class Tokenizer {
     /// Here are some examples of the inputs that are accepted
     ///
     /// ```
-    /// encode("A single sequence")`
-    /// encode("A sequence", "And its pair")`
-    /// encode([ "A", "pre", "tokenized", "sequence" ], is_pretokenized=True)`
+    /// encode("A single sequence")
+    /// encode("A sequence", pair: "And its pair")
+    /// encode(.preTokenized([ "A", "pre", "tokenized", "sequence" ]))
     /// encode(
-    ///   [ "A", "pre", "tokenized", "sequence" ], [ "And", "its", "pair" ],
-    ///   is_pretokenized=True
+    ///   .preTokenized([ "A", "pre", "tokenized", "sequence" ]),
+    ///   pair: .preTokenized([ "And", "its", "pair" ])
     /// )
     /// ```
     ///
     /// - Parameters:
     ///
-    ///   - sequence: The main input sequence we want to encode. This sequence can be either raw
-    ///               text or pre-tokenized, according to the `is_pretokenized` argument:
-    ///               If `is_pretokenized=False`: ``TextInputSequence``.
-    ///               If ``is_pretokenized=True``: `~tokenizers.PreTokenizedInputSequence`
+    ///   - input: The main input sequence we want to encode. This sequence can be either raw
+    ///            text or pre-tokenized.
     ///
     ///   - pair:
     ///         An optional input sequence. The expected format is the same that for `sequence`.
     ///
-    ///   - is_pretokenized:
-    ///         Whether the input is already pre-tokenized
-    ///
-    ///   - add_special_tokens:
+    ///   - addSpecialTokens:
     ///         Whether to add the special tokens
     ///
     /// - Returns:
     ///     The encoded result
     ///
-    public func encode(_ input: String, addSpecialTokens: Bool = true) throws -> Encoding {
-        let encoding = try self.tokenizer.encode(input: input, addSpecialTokens: addSpecialTokens)
+    public func encode(
+        _ input: InputSequence, pair: InputSequence? = nil, addSpecialTokens: Bool = true
+    ) throws -> Encoding {
+        let encoding = try self.tokenizer.encode(
+            input: input.toRustInputSequence(),
+            pair: pair?.toRustInputSequence(),
+            addSpecialTokens: addSpecialTokens)
         return Encoding(encoding)
     }
 

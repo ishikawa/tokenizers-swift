@@ -3,12 +3,27 @@ use crate::utils::RustVocab;
 use crate::{RustBpe, RustBpeTrainer, RustWhitespace};
 use std::sync::{Arc, RwLock};
 use tk::{
-    AddedToken, DecoderWrapper, Model, NormalizerWrapper, PostProcessorWrapper, TokenizerImpl,
+    AddedToken, DecoderWrapper, EncodeInput, InputSequence, Model, NormalizerWrapper,
+    PostProcessorWrapper, TokenizerImpl,
 };
 use tokenizers as tk;
 
 type Tokenizer =
     TokenizerImpl<RustBpe, NormalizerWrapper, RustWhitespace, PostProcessorWrapper, DecoderWrapper>;
+
+pub enum RustInputSequence {
+    Raw { raw_value: String },
+    PreTokenized { tokens: Vec<String> },
+}
+
+impl From<RustInputSequence> for InputSequence<'_> {
+    fn from(seq: RustInputSequence) -> Self {
+        match seq {
+            RustInputSequence::Raw { raw_value } => raw_value.into(),
+            RustInputSequence::PreTokenized { tokens } => tokens.into(),
+        }
+    }
+}
 
 pub struct RustTokenizer {
     tokenizer: Arc<RwLock<Tokenizer>>,
@@ -52,7 +67,23 @@ impl RustTokenizer {
         })
     }
 
-    pub fn encode(&self, input: &str, add_special_tokens: bool) -> Result<Arc<RustEncoding>> {
+    pub fn encode(
+        &self,
+        input: RustInputSequence,
+        pair: Option<RustInputSequence>,
+        add_special_tokens: bool,
+    ) -> Result<Arc<RustEncoding>> {
+        let input: InputSequence = match input {
+            RustInputSequence::Raw { raw_value } => raw_value.into(),
+            RustInputSequence::PreTokenized { tokens } => tokens.into(),
+        };
+
+        let input: EncodeInput = if let Some(pair) = pair {
+            EncodeInput::Dual(input, pair.into())
+        } else {
+            EncodeInput::Single(input)
+        };
+
         let encoding = self
             .tokenizer
             .read()

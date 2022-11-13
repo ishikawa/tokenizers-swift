@@ -24,6 +24,12 @@ enum TokenizersError {
   "Exception",
 };
 
+[Enum]
+interface RustInputSequence {
+  Raw(string raw_value);
+  PreTokenized(sequence<string> tokens);
+};
+
 interface RustTokenizer {
   constructor(RustBpe model);
 
@@ -37,7 +43,10 @@ interface RustTokenizer {
     string? auth_token);
 
   [Throws=TokenizersError]
-  RustEncoding encode([ByRef] string input, boolean add_special_tokens);
+  RustEncoding encode(
+    RustInputSequence input,
+    RustInputSequence? pair,
+    boolean add_special_tokens);
 
   [Throws=TokenizersError]
   void train(sequence<string> files, RustBpeTrainer? trainer);
