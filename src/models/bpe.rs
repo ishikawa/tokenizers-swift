@@ -1,9 +1,9 @@
 use crate::error::{Result, TokenizersError};
-use crate::utils::RustMerges;
+use crate::utils::{RustMerges, RustVocab};
 use crate::RustBpeTrainer;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, RwLock};
-use tk::models::bpe::{Vocab, BPE};
+use tk::models::bpe::BPE;
 use tk::ModelWrapper;
 use tokenizers as tk;
 
@@ -77,7 +77,7 @@ impl tk::Model for RustBpe {
 
 impl RustBpe {
     pub fn new(
-        vocab: Option<tk::models::bpe::Vocab>,
+        vocab: Option<RustVocab>,
         merges: Option<RustMerges>,
         vocab_file: Option<String>,
         merges_file: Option<String>,
@@ -140,7 +140,7 @@ impl RustBpe {
 // Associated functions
 #[derive(Debug)]
 pub struct RustBpeReadFileReturn {
-    pub vocab: Vocab,
+    pub vocab: RustVocab,
     pub merges: tk::models::bpe::Merges,
 }
 

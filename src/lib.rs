@@ -11,7 +11,7 @@ pub use crate::models::bpe::{
 pub use crate::pre_tokenizers::{RustPreTokenizedString, RustWhitespace};
 pub use crate::tokenizer::{RustAddedToken, RustEncoding, RustTokenizer};
 pub use crate::trainers::RustBpeTrainer;
-pub use crate::utils::{RustMerges, RustOffsets};
+pub use crate::utils::{RustMerges, RustOffsets, RustUSize, RustVocab};
 use uniffi_macros;
 
 uniffi_macros::include_scaffolding!("lib");

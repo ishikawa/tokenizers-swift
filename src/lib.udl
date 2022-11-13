@@ -1,11 +1,14 @@
 [Custom]
+typedef record<string, u32> RustVocab;
+
+[Custom]
 typedef sequence<sequence<string>> RustMerges;
 
 [Custom]
 typedef sequence<u64> RustOffsets;
 
 [Custom]
-typedef u64 usize;
+typedef u64 RustUSize;
 
 namespace tokenizers {
   // UniFFI doesn't support associated function, so we have to define them as
@@ -42,9 +45,11 @@ interface RustTokenizer {
   [Throws=TokenizersError]
   void save([ByRef] string path, boolean pretty);
 
-  usize add_tokens(sequence<RustAddedToken> tokens);
+  RustVocab get_vocab(boolean with_added_tokens);
+
+  RustUSize add_tokens(sequence<RustAddedToken> tokens);
   
-  usize add_special_tokens(sequence<RustAddedToken> tokens);
+  RustUSize add_special_tokens(sequence<RustAddedToken> tokens);
 
   RustWhitespace? get_pre_tokenizer();
   void set_pre_tokenizer(RustWhitespace pre_tokenizer);
@@ -75,18 +80,18 @@ interface RustAddedToken {
 
 // Models
 dictionary RustBpeReadFileReturn {
-  record<string, u32> vocab;
+  RustVocab vocab;
   RustMerges merges;
 };
 
 interface RustBpe {
   [Throws=TokenizersError]
   constructor(
-    record<string, u32>? vocab,
+    RustVocab? vocab,
     RustMerges? merges,
     string? vocab_file,
     string? merges_file,
-    usize? cache_capacity,
+    RustUSize? cache_capacity,
     float? dropout,
     string? unk_token,
     string? continuing_subword_prefix,
@@ -110,11 +115,11 @@ interface RustWhitespace {
 interface RustBpeTrainer {
   [Throws=TokenizersError]
   constructor(
-    usize? vocab_size,
+    RustUSize? vocab_size,
     u32? min_frequency,
     boolean? show_progress,
     sequence<RustAddedToken>? special_tokens,
-    usize? limit_alphabet,
+    RustUSize? limit_alphabet,
     sequence<string>? initial_alphabet,
     string? continuing_subword_prefix,
     string? end_of_word_suffix

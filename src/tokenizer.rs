@@ -1,6 +1,6 @@
-use crate::{RustBpe, RustBpeTrainer, RustWhitespace};
-
 use super::error::Result;
+use crate::utils::RustVocab;
+use crate::{RustBpe, RustBpeTrainer, RustWhitespace};
 use std::sync::{Arc, RwLock};
 use tk::{
     AddedToken, DecoderWrapper, Model, NormalizerWrapper, PostProcessorWrapper, TokenizerImpl,
@@ -78,6 +78,10 @@ impl RustTokenizer {
 
     pub fn save(&self, path: &str, pretty: bool) -> Result<()> {
         Ok(self.tokenizer.read().unwrap().save(path, pretty)?)
+    }
+
+    pub fn get_vocab(&self, with_added_tokens: bool) -> RustVocab {
+        self.tokenizer.read().unwrap().get_vocab(with_added_tokens)
     }
 
     pub fn add_tokens(&self, tokens: Vec<Arc<RustAddedToken>>) -> usize {

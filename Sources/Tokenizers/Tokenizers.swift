@@ -1,3 +1,7 @@
+public typealias Vocab = [String: UInt32]
+
+public typealias Merges = [(String, String)]
+
 /// A `Tokenizer` works as a pipeline. It processes some raw text as input
 /// and outputs an `Encoding`.
 public class Tokenizer {
@@ -131,6 +135,18 @@ public class Tokenizer {
         try self.tokenizer.save(path: path, pretty: pretty)
     }
 
+    /// Get the underlying vocabulary
+    ///
+    /// - Parameters:
+    ///     - includeAddedTokens:
+    ///         Whether to include the added tokens
+    ///
+    /// - Return:
+    ///     The vocabulary
+    public func getVocab(includeAddedTokens: Bool) -> Vocab {
+        self.tokenizer.getVocab(withAddedTokens: includeAddedTokens)
+    }
+
     /// Add the given tokens to the vocabulary
     ///
     /// The given tokens are added only if they don't already exist in the vocabulary.
@@ -143,9 +159,11 @@ public class Tokenizer {
     ///
     /// - Return:
     ///     The number of tokens that were created in the vocabulary
-    public func addTokens(_ tokens: [AddedTokenOrString]) -> UInt64 {
+    public func addTokens(_ tokens: [AddedTokenOrString]) -> Int {
         let tokens = AddedTokenOrString.toRustAddedTokens(tokens, special: false)
-        return self.tokenizer.addTokens(tokens: tokens)
+        let n = self.tokenizer.addTokens(tokens: tokens)
+
+        return Int(n)
     }
 
     /// Add the given special tokens to the Tokenizer.
@@ -162,11 +180,13 @@ public class Tokenizer {
     ///         a string or ``AddedToken`` for more
     ///         customization.
     ///
-    /// - Return:
+    /// - Returns:
     ///     The number of tokens that were created in the vocabulary
-    public func addSpecialTokens(_ tokens: [AddedTokenOrString]) -> UInt64 {
+    public func addSpecialTokens(_ tokens: [AddedTokenOrString]) -> Int {
         let tokens = AddedTokenOrString.toRustAddedTokens(tokens, special: true)
-        return self.tokenizer.addSpecialTokens(tokens: tokens)
+        let n = self.tokenizer.addSpecialTokens(tokens: tokens)
+
+        return Int(n)
     }
 }
 
@@ -250,9 +270,6 @@ public struct AddedToken {
 }
 
 //MARK:- Models
-public typealias Vocab = [String: UInt32]
-
-public typealias Merges = [(String, String)]
 
 /// A [Byte-Pair Encoding (BPE)](https://aclanthology.org/P16-1162/) model.
 public class BPE {
@@ -392,7 +409,16 @@ public class BPE {
 }
 
 //MARK:- Trainers
-public enum AddedTokenOrString: ExpressibleByStringLiteral {
+public enum AddedTokenOrString: ExpressibleByStringLiteral, CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .token(let token):
+            return token.content
+        case .string(let value):
+            return value
+        }
+    }
+
     case token(AddedToken)
     case string(String)
 
