@@ -74,7 +74,7 @@ impl RustBpeTrainer {
             builder = builder.show_progress(show_progress);
         }
         if let Some(special_tokens) = special_tokens {
-            let special_tokens = special_tokens.iter().map(|t| t.clone_token()).collect();
+            let special_tokens = special_tokens.iter().map(|t| t.as_ref().into()).collect();
             builder = builder.special_tokens(special_tokens);
         }
         if let Some(limit_alphabet) = limit_alphabet {

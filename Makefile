@@ -20,9 +20,10 @@ build:
 	mkdir -p ${BUILD_DIR}
 	cargo metadata --no-deps --format-version 1 | jq -r ".packages[0].name" > ${BUILD_DIR}/pkg_name.txt
 	echo "Package name = $$(cat ${BUILD_DIR}/pkg_name.txt)"
-	cargo build ${CARGO_BUILD_OPTS} --message-format json | \
+	cargo check ${CARGO_BUILD_OPTS} --message-format json | \
 	jq -r "if .reason == \"build-script-executed\" and \
 		(.package_id | contains(\"$$(cat ${BUILD_DIR}/pkg_name.txt)\")) then .out_dir else empty end" > ${BUILD_DIR}/out_dir.txt
+	cargo build ${CARGO_BUILD_OPTS}
 	echo "Output dir = $$(cat ${BUILD_DIR}/out_dir.txt)"
 	cp $$(cat ${BUILD_DIR}/out_dir.txt)/*.h ${BUILD_DIR}/
 	cp $$(cat ${BUILD_DIR}/out_dir.txt)/*.swift ${BUILD_DIR}/

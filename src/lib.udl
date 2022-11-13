@@ -42,6 +42,10 @@ interface RustTokenizer {
   [Throws=TokenizersError]
   void save([ByRef] string path, boolean pretty);
 
+  usize add_tokens(sequence<RustAddedToken> tokens);
+  
+  usize add_special_tokens(sequence<RustAddedToken> tokens);
+
   RustWhitespace? get_pre_tokenizer();
   void set_pre_tokenizer(RustWhitespace pre_tokenizer);
 
